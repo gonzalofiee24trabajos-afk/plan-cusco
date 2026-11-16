@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plan Cusco – 6 semanas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0d14; --card:#1a1622; --card2:#221d2d; --line:#2e2740;
+  --tx:#ece8f4; --mut:#a59db6; --pur:#8b4fd1; --pur2:#b48cf0; --purbg:#2a1f3d;
+  --ok:#4fbf8a; --warn:#e6b450; --bad:#e46a6a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--tx);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;line-height:1.5}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 24px) env(safe-area-inset-left)}
+.wrap{max-width:640px;margin:0 auto;padding:0 14px}
+header{padding:22px 0 10px}
+header h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
+header p{color:var(--mut);font-size:13px;margin-top:2px}
+.prog{height:6px;background:var(--line);border-radius:6px;margin-top:12px;overflow:hidden}
+.prog>div{height:100%;background:linear-gradient(90deg,var(--pur),var(--pur2));border-radius:6px;transition:width .4s}
+.progtxt{font-size:12px;color:var(--mut);margin-top:6px;display:flex;justify-content:space-between}
+nav{position:sticky;top:0;z-index:10;background:rgba(15,13,20,.94);backdrop-filter:blur(8px);padding:10px 0;margin:0 -14px;border-bottom:1px solid var(--line)}
+nav .tabs{display:flex;gap:6px;overflow-x:auto;padding:0 14px;scrollbar-width:none}
+nav .tabs::-webkit-scrollbar{display:none}
+nav button{flex:0 0 auto;background:var(--card);color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font:600 13px Inter,sans-serif;cursor:pointer}
+nav button.on{background:var(--pur);color:#fff;border-color:var(--pur)}
+section{display:none;padding-top:16px}
+section.on{display:block}
+h2{font-size:18px;font-weight:700;margin:4px 0 10px}
+h3{font-size:15px;font-weight:700;margin-bottom:6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.card.pur{background:var(--purbg);border-color:#45336a}
+.muted{color:var(--mut)}
+.small{font-size:13px}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--card2);color:var(--pur2);margin-right:4px}
+.tag.gym{background:var(--pur);color:#fff}
+.tag.casa{background:#1f3a30;color:#7fe0b3}
+.tag.desc{background:#2c2c2c;color:#bbb}
+.row{display:flex;gap:10px;align-items:center}
+.sp{justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{background:var(--card2);border-radius:10px;padding:10px}
+.kpi b{display:block;font-size:17px}
+.kpi span{font-size:12px;color:var(--mut)}
+ul.clean{list-style:none}
+ul.dots{padding-left:18px}
+ul.dots li{margin:3px 0}
+.day{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.day:last-child{border-bottom:0}
+.day .d{width:44px;flex:0 0 44px;text-align:center}
+.day .d b{display:block;font-size:13px}
+.day .d span{font-size:11px;color:var(--mut)}
+.day.today{background:var(--purbg);margin:0 -14px;padding:10px 14px;border-radius:10px}
+.wsel{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}
+.wsel::-webkit-scrollbar{display:none}
+.wsel button{flex:0 0 auto;background:var(--card);border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:8px 12px;font:600 13px Inter,sans-serif;cursor:pointer;text-align:left}
+.wsel button small{display:block;font-weight:500;color:var(--mut);font-size:11px}
+.wsel button.on{border-color:var(--pur2);background:var(--purbg)}
+.rsel{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.rsel button{background:var(--card);border:1px solid var(--line);color:var(--tx);border-radius:999px;padding:7px 12px;font:600 12.5px Inter,sans-serif;cursor:pointer}
+.rsel button.on{background:var(--pur);border-color:var(--pur)}
+.block{margin:14px 0 6px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pur2)}
+details.ex{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}
+details.ex summary{list-style:none;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+details.ex summary::-webkit-details-marker{display:none}
+details.ex .num{flex:0 0 26px;height:26px;border-radius:8px;background:var(--card2);color:var(--pur2);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+details.ex .t{flex:1}
+details.ex .t b{display:block;font-size:14.5px}
+details.ex .t span{font-size:12.5px;color:var(--mut)}
+details.ex .dose{font-size:12.5px;font-weight:700;color:var(--tx);background:var(--card2);border-radius:8px;padding:4px 8px;white-space:nowrap;align-self:center}
+details.ex[open] summary{border-bottom:1px solid var(--line)}
+details.ex .body{padding:12px 14px}
+.yt{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:#3a1620;color:#ff9a9a;border:1px solid #5a2330;border-radius:8px;padding:7px 11px;font-size:13px;font-weight:600;text-decoration:none}
+.yt svg{width:16px;height:16px}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.chk:last-child{border-bottom:0}
+.chk input{appearance:none;flex:0 0 22px;width:22px;height:22px;border:2px solid #5b4a7a;border-radius:7px;margin-top:1px;cursor:pointer;display:grid;place-content:center}
+.chk input:checked{background:var(--pur);border-color:var(--pur)}
+.chk input:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.chk.done span{color:var(--mut);text-decoration:line-through}
+.input{display:flex;gap:8px;align-items:center;margin-top:8px}
+.input label{font-size:12.5px;color:var(--mut);flex:1}
+.input input{width:96px;background:var(--card2);border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:7px 9px;font:600 14px Inter,sans-serif}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mut);font-weight:600;font-size:12px}
+.alert{border-left:3px solid var(--bad);background:#2a1719;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13.5px}
+.note{border-left:3px solid var(--warn);background:#2a2416;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13.5px}
+.okn{border-left:3px solid var(--ok);background:#15281f;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13.5px}
+.zones{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.zones div{border-radius:10px;padding:8px;text-align:center;font-size:12px}
+.zones b{display:block;font-size:15px}
+.z2{background:#15281f;color:#9fe6c3}.z4{background:#2a2416;color:#f0cf86}.z5{background:#2a1719;color:#f2a0a0}
+.btn{display:block;width:100%;background:var(--pur);color:#fff;border:0;border-radius:12px;padding:12px;font:700 14px Inter,sans-serif;cursor:pointer;margin-top:10px}
+footer{color:var(--mut);font-size:11.5px;text-align:center;padding:20px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Plan Cusco · 6 semanas</h1>
+  <p>Cardio primero, fuerza después · 16 nov – 27 dic 2026</p>
+  <div class="prog"><div id="pbar" style="width:0"></div></div>
+  <div class="progtxt"><span id="ptxt">Hitos cumplidos: 0</span><span id="pweek"></span></div>
+</header>
+<nav><div class="tabs" id="tabs">
+  <button data-t="hoy" class="on">Hoy</button>
+  <button data-t="plan">Plan semanal</button>
+  <button data-t="rutinas">Rutinas</button>
+  <button data-t="hitos">Hitos</button>
+  <button data-t="nutri">Nutrición</button>
+  <button data-t="cusco">Cusco</button>
+</div></nav>
+
+<!-- HOY -->
+<section id="hoy" class="on">
+  <div id="hoyBox"></div>
+  <div class="card">
+    <h3>Zonas de esfuerzo (referencia para 22 años)</h3>
+    <p class="small muted">FC máxima estimada ≈ 192 lpm. Si no tiene pulsómetro, use la prueba del habla.</p>
+    <div class="zones">
+      <div class="z2"><b>115–135</b>Zona 2<br>Habla en frases</div>
+      <div class="z4"><b>150–165</b>Moderado-duro<br>Frases cortas</div>
+      <div class="z5"><b>165–175</b>Intervalo<br>Pocas palabras</div>
+    </div>
+    <p class="small muted" style="margin-top:8px">Por el asma, los intervalos se hacen "duros pero controlables" (8/10), nunca al máximo.</p>
+  </div>
+</section>
+
+<!-- PLAN -->
+<section id="plan">
+  <h2>Plan semanal</h2>
+  <div class="wsel" id="wselPlan"></div>
+  <div id="planBox"></div>
+</section>
+
+<!-- RUTINAS -->
+<section id="rutinas">
+  <h2>Rutinas detalladas</h2>
+  <p class="small muted" style="margin-bottom:10px">Las dosis (minutos, series) cambian según la semana elegida. Toque cada ejercicio para ver la técnica y el tutorial.</p>
+  <div class="wsel" id="wselRut"></div>
+  <div class="rsel" id="rsel"></div>
+  <div id="rutBox"></div>
+</section>
+
+<!-- HITOS -->
+<section id="hitos">
+  <h2>Hitos por semana</h2>
+  <div class="card pur">
+    <h3>Meta final</h3>
+    <p class="small">Llegar a Cusco capaz de caminar 2 horas con subidas y escaleras a ritmo conversacional, con el asma controlada y unos 3–4 kg menos (≈ 84–85 kg).</p>
+  </div>
+  <div class="card">
+    <h3>Test de cinta (semanas 1, 3 y 5, domingo)</h3>
+    <p class="small muted">Después del calentamiento: 15 min a 5,0 km/h con 10 % de inclinación. Anote la FC del minuto 15 y el esfuerzo percibido (1–10). Mismas condiciones cada vez. Mejora esperada: 5–10 lpm menos en el test 3 que en el test 1.</p>
+    <div id="testBox"></div>
+  </div>
+  <div id="hitosBox"></div>
+</section>
+
+<!-- NUTRICIÓN -->
+<section id="nutri">
+  <h2>Nutrición</h2>
+  <div class="grid2" style="margin-bottom:12px">
+    <div class="kpi"><b>2 200–2 300</b><span>kcal/día</span></div>
+    <div class="kpi"><b>140–150 g</b><span>proteína/día</span></div>
+    <div class="kpi"><b>230–260 g</b><span>carbohidratos</span></div>
+    <div class="kpi"><b>65–75 g</b><span>grasas</span></div>
+    <div class="kpi"><b>2,5–3 L</b><span>agua/día</span></div>
+    <div class="kpi"><b>25–35 g</b><span>fibra/día</span></div>
+  </div>
+
+  <div class="card">
+    <h3>El plato guía</h3>
+    <ul class="dots small">
+      <li><b>½ plato:</b> verduras o ensalada.</li>
+      <li><b>¼ plato:</b> proteína magra (palma de la mano: pollo, pescado, huevo, carne magra, menestra).</li>
+      <li><b>¼ plato:</b> carbohidrato (arroz, quinua, papa, camote, fideos). Más cantidad los días de gimnasio.</li>
+      <li><b>1 pulgar:</b> grasa buena (palta, aceite de oliva, frutos secos).</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Horario según su calendario</h3>
+    <table>
+      <tr><th>Día</th><th>Qué ajustar</th></tr>
+      <tr><td><b>Lun y Sáb</b><br><span class="muted small">gym nocturno</span></td><td class="small">Merienda a las 16:30–17:00 (plátano + kefir, o pan con huevo). Cena después del gym: proteína + arroz o papa + verduras.</td></tr>
+      <tr><td><b>Miércoles</b><br><span class="muted small">gym 07:00</span></td><td class="small">A las 06:15, algo ligero: plátano o 1 tostada con miel. Desayuno completo al salir del gym (huevos + pan integral + fruta).</td></tr>
+      <tr><td><b>Domingo</b><br><span class="muted small">sesión larga</span></td><td class="small">Desayuno 1,5 h antes (avena con kefir y fruta). Lleve agua y, si pasa de 90 min, un plátano o dátiles a mitad de sesión.</td></tr>
+      <tr><td><b>Mar, Jue, Vie</b></td><td class="small">Menos carbohidrato en la cena. Mantenga la proteína en cada comida.</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Día tipo</h3>
+    <table>
+      <tr><td><b>Desayuno</b></td><td class="small">3 huevos (o 2 + 2 claras) con verduras, 2 panes integrales o 1 camote pequeño, 1 fruta.</td></tr>
+      <tr><td><b>Media mañana</b></td><td class="small">Kefir 300 ml + 30 g de avena o fruta picada.</td></tr>
+      <tr><td><b>Almuerzo</b></td><td class="small">150–180 g de pollo, pescado (bonito, jurel, trucha) o carne magra + 1 taza de arroz/quinua/menestra + ensalada grande.</td></tr>
+      <tr><td><b>Merienda</b></td><td class="small">Fruta + un puñado de maní o almendras, o pan con palta.</td></tr>
+      <tr><td><b>Cena</b></td><td class="small">Proteína (atún, pollo, huevos, queso fresco) + verduras + porción pequeña de carbohidrato (mayor si entrenó).</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Cambios fáciles</h3>
+    <table>
+      <tr><th>En vez de</th><th>Mejor</th></tr>
+      <tr><td class="small">Gaseosa o jugo envasado</td><td class="small">Agua, agua con limón o infusión sin azúcar</td></tr>
+      <tr><td class="small">Pasteles o galletas</td><td class="small">Fruta + yogur griego o kefir</td></tr>
+      <tr><td class="small">Pollo broaster o frituras</td><td class="small">Pollo a la brasa sin piel o a la plancha</td></tr>
+      <tr><td class="small">Pan blanco en exceso</td><td class="small">Pan integral, camote o choclo</td></tr>
+      <tr><td class="small">Snack de bolsa</td><td class="small">Canchita casera sin mucho aceite o maní</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Lista de compras semanal</h3>
+    <ul class="dots small">
+      <li><b>Proteínas:</b> 30 huevos, 1,5 kg de pechuga de pollo, 2 latas de atún en agua, pescado fresco (1 kg), queso fresco, yogur griego natural.</li>
+      <li><b>Carbohidratos:</b> avena, arroz, quinua, lentejas o frejoles, pan integral, camote, papa.</li>
+      <li><b>Frutas y verduras:</b> plátanos, manzanas, mandarinas, papaya; tomate, lechuga, espinaca, zanahoria, brócoli, pepino, cebolla.</li>
+      <li><b>Grasas:</b> paltas, maní o almendras, aceite de oliva.</li>
+      <li><b>Otros:</b> kefir (como ya lo toma), limones, infusiones.</li>
+    </ul>
+  </div>
+
+  <div class="note"><b>Laboratorio:</b> pida un hemograma con ferritina esta semana. La falta de hierro limita el rendimiento en altura. No tome suplementos de hierro sin ver el resultado con su médico.</div>
+</section>
+
+<!-- CUSCO -->
+<section id="cusco">
+  <h2>Cusco: 18 días</h2>
+  <div class="card">
+    <h3>Altitudes de su recorrido</h3>
+    <table>
+      <tr><td>Cusco</td><td><b>≈ 3 400 m</b></td><td class="small muted">La más alta: aclimatarse aquí</td></tr>
+      <tr><td>Valle Sagrado / Urubamba</td><td><b>≈ 2 870 m</b></td><td class="small muted">Más llevadero</td></tr>
+      <tr><td>Ollantaytambo</td><td><b>≈ 2 790 m</b></td><td class="small muted">Muchas escaleras en las terrazas</td></tr>
+      <tr><td>Machu Picchu</td><td><b>≈ 2 430 m</b></td><td class="small muted">Escalones y 2–3 h de caminata</td></tr>
+    </table>
+    <p class="small muted" style="margin-top:8px">Consejo: si puede, haga el Valle Sagrado y Ollantaytambo después de 2–3 días en Cusco, y Machu Picchu al final.</p>
+  </div>
+
+  <div class="card">
+    <h3>Protocolo de llegada</h3>
+    <table>
+      <tr><td><b>Día 1</b></td><td class="small">Descanso. Caminata suave en plano máx. 20–30 min. Comidas pequeñas, ricas en carbohidrato y bajas en grasa. Mucha agua. Sin alcohol.</td></tr>
+      <tr><td><b>Día 2</b></td><td class="small">Caminata suave 30–45 min. Suba escaleras despacio. Sin alcohol, sin comidas pesadas.</td></tr>
+      <tr><td><b>Día 3</b></td><td class="small">Si se siente bien: caminata de 60 min con algo de subida. Ya puede programar el primer tour.</td></tr>
+      <tr><td><b>Día 4+</b></td><td class="small">Caminata diaria de 45–60 min y 2–3 circuitos de calistenia de 20–30 min por semana (rutina "Casa A").</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Asma en altura</h3>
+    <ul class="dots small">
+      <li>Lleve el salbutamol siempre encima, más un inhalador de repuesto en otro bolso.</li>
+      <li>Lleve su receta o informe médico.</li>
+      <li>El aire de Cusco es frío y seco, sobre todo de noche y de madrugada: cúbrase nariz y boca con una bufanda o un buff.</li>
+      <li>Antes de cada subida larga, caliente 5–10 min caminando suave.</li>
+      <li>Siga lo que le indique su médico sobre el uso del inhalador antes del esfuerzo.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Fiestas sin culpa</h3>
+    <ul class="dots small">
+      <li>Objetivo en Cusco: <b>mantener el peso</b>, no bajar.</li>
+      <li>Disfrute Navidad y Año Nuevo; elija 1–2 comidas especiales por semana y el resto sencillo.</li>
+      <li>Proteína en cada comida principal (trucha, pollo, huevos, quinua).</li>
+      <li>Si toma alcohol, un vaso de agua por cada bebida. El alcohol empeora el sueño y la hidratación en altura.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Maleta</h3>
+    <div id="maletaBox"></div>
+  </div>
+
+  <div class="alert"><b>Señales de alerta (busque atención médica):</b> dolor de cabeza intenso que no cede, vómitos repetidos, confusión o torpeza al caminar, falta de aire en reposo, tos con flema espumosa o rosada, o crisis de asma que no mejora con el salbutamol.</div>
+</section>
+
+<footer>Guía general de entrenamiento y nutrición. No reemplaza la evaluación de su médico, sobre todo en relación con el asma.</footer>
+</div>
+
+<script>
+const START = new Date(2026,10,16); // lunes 16 nov 2026
+const YT = q => 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q);
+const ytIcon = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg>';
+
+const store = {
+  get(k,d){try{const v=localStorage.getItem('pc_'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem('pc_'+k,JSON.stringify(v))}catch(e){}}
+};
+
+const WEEKS = [
+ {n:1,f:'16–22 nov',t:'Adaptación',z2:'30 min',int:'3 × 2 min',dc:'45 min',de:'10 min',ser:'2 × 12',em:'5 min',cr:'3 rondas',mo:'sin mochila',peso:'87–87,5 kg',
+  foco:'Aprender la técnica, conocer las máquinas y medir su punto de partida. Cargas cómodas (podría hacer 4–5 repeticiones más).'},
+ {n:2,f:'23–29 nov',t:'Base aeróbica',z2:'35 min',int:'3 × 3 min',dc:'60 min',de:'12 min',ser:'3 × 10–12',em:'8 min',cr:'4 rondas',mo:'sin mochila',peso:'≈ 87 kg',
+  foco:'Sumar volumen de Zona 2. Se agrega una serie a los ejercicios de fuerza.'},
+ {n:3,f:'30 nov–6 dic',t:'Construcción',z2:'40 min',int:'4 × 3 min',dc:'70 min',de:'15 min',ser:'3 × 10–12 (más carga)',em:'10 min',cr:'4 rondas',mo:'sin mochila',peso:'≈ 86,5 kg',
+  foco:'Test de cinta 2. Subir carga en los ejercicios de fuerza manteniendo la técnica.'},
+ {n:4,f:'7–13 dic',t:'Específica',z2:'40 min',int:'3 × 4 min',dc:'80 min',de:'15 min',ser:'3 × 8–10',em:'10 min',cr:'4 rondas',mo:'con mochila de 3 kg',peso:'≈ 86 kg',
+  foco:'Simular el esfuerzo de Cusco: inclinación, escaleras y mochila.'},
+ {n:5,f:'14–20 dic',t:'Pico',z2:'45 min',int:'4 × 4 min (3 × 4 si nota síntomas)',dc:'90 min',de:'20 min',ser:'3 × 8–10',em:'12 min',cr:'4 rondas',mo:'con mochila de 3–5 kg',peso:'85–85,5 kg',
+  foco:'Semana de mayor carga. Test de cinta 3 para comprobar la mejora.'},
+ {n:6,f:'21–27 dic',t:'Descarga y viaje',z2:'30 min',int:'sin intervalos (solo Zona 2)',dc:'40 min',de:'—',ser:'2 × 10 (ligero)',em:'—',cr:'2 rondas',mo:'sin mochila',peso:'≈ 85 kg',
+  foco:'Reducir el volumen a la mitad para llegar descansado. Preparar la maleta.'}
+];
+
+// Semana de JS: 0=Dom ... 6=Sáb
+const SCHED = [
+ {d:'Lunes',js:1,r:'fa',h:'18:00–20:00'},
+ {d:'Martes',js:2,r:'ca',h:'07:00 (30 min)'},
+ {d:'Miércoles',js:3,r:'in',h:'07:00–09:00'},
+ {d:'Jueves',js:4,r:'cb',h:'07:00 (30 min)'},
+ {d:'Viernes',js:5,r:'de',h:'—'},
+ {d:'Sábado',js:6,r:'fb',h:'19:00–21:00'},
+ {d:'Domingo',js:0,r:'la',h:'09:00–13:00'}
+];
+
+const R = {
+ fa:{t:'Fuerza A + Zona 2',tipo:'gym',dur:'≈ 1 h 45 min',res:'Cuerpo completo y cinta inclinada',
+  b:[
+   {n:'Calentamiento · 10 min',e:[
+     {x:'Bicicleta estática',m:'Bicicleta estática',d:'5 min',c:['Ritmo suave, resistencia baja.','Debe poder conversar sin esfuerzo.'],q:'bicicleta estatica calentamiento gimnasio'},
+     {x:'Movilidad general',m:'Sin máquina',d:'5 min',c:['10 círculos de cadera por lado.','10 sentadillas al aire lentas.','10 rotaciones de tronco por lado.'],q:'rutina movilidad antes de entrenar 5 minutos'}]},
+   {n:'Fuerza · 45–50 min (descanso 90 s)',e:[
+     {x:'Prensa de piernas',m:'Máquina de prensa 45°',d:'{ser}',c:['Pies a la anchura de hombros, en el centro de la plataforma.','Baje hasta que la rodilla forme unos 90°, sin despegar la espalda baja del respaldo.','No bloquee las rodillas al estirar.'],q:'prensa de piernas 45 grados tecnica correcta'},
+     {x:'Press de pecho en máquina',m:'Chest press (máquina)',d:'{ser}',c:['Ajuste el asiento para que los agarres queden a la altura media del pecho.','Hombros atrás y abajo durante todo el movimiento.','Exhale al empujar, inhale al volver.'],q:'press de pecho en maquina tecnica correcta'},
+     {x:'Jalón al pecho',m:'Polea alta (lat pulldown)',d:'{ser}',c:['Agarre un poco más ancho que los hombros.','Lleve la barra a la parte alta del pecho, no detrás de la nuca.','No balancee el tronco para ayudarse.'],q:'jalon al pecho polea tecnica correcta'},
+     {x:'Peso muerto rumano',m:'Mancuernas',d:'{ser}',c:['Rodillas ligeramente flexionadas y fijas.','Lleve la cadera hacia atrás con la espalda recta; las mancuernas bajan pegadas a las piernas.','Baje hasta media tibia o hasta donde mantenga la espalda neutra.'],q:'peso muerto rumano con mancuernas tecnica'},
+     {x:'Remo sentado',m:'Polea baja con agarre en V',d:'{ser}',c:['Pecho alto y espalda recta.','Tire hacia el ombligo juntando las escápulas.','Vuelva despacio, sin encorvarse.'],q:'remo sentado en polea baja tecnica correcta'},
+     {x:'Plancha frontal',m:'Colchoneta',d:'3 × 30–45 s',c:['Codos bajo los hombros, cuerpo en línea recta.','Apriete glúteos y abdomen.','Respire con normalidad, no contenga el aire.'],q:'plancha abdominal tecnica correcta'}]},
+   {n:'Cardio Zona 2',e:[
+     {x:'Caminata en cinta inclinada',m:'Cinta de correr',d:'{z2}',c:['Inclinación 8–12 %, velocidad 4,8–5,5 km/h.','No se sujete a la baranda: el esfuerzo debe venir de las piernas.','FC 115–135 lpm o ritmo en el que pueda hablar en frases.'],q:'caminata en cinta inclinada zona 2'}]},
+   {n:'Vuelta a la calma · 5–10 min',e:[
+     {x:'Estiramientos',m:'Colchoneta',d:'5–10 min',c:['Cuádriceps, isquios, pantorrillas, pecho y espalda.','20–30 s por estiramiento, sin rebotes.'],q:'estiramientos despues de entrenar piernas y espalda'}]}
+  ]},
+ in:{t:'Intervalos + Core',tipo:'gym',dur:'≈ 1 h 20 min',res:'Mejora de capacidad aeróbica máxima',
+  b:[
+   {n:'Calentamiento progresivo · 15 min',e:[
+     {x:'Elíptica o bicicleta',m:'Elíptica / bicicleta estática',d:'15 min',c:['5 min suave, 5 min moderado, 5 min con 3 aceleraciones de 20 s.','Un calentamiento largo reduce el riesgo de broncoespasmo por ejercicio.','Tenga el salbutamol a mano.'],q:'calentamiento progresivo eliptica'}]},
+   {n:'Intervalos',e:[
+     {x:'Intervalos en bicicleta o cinta inclinada',m:'Bicicleta estática o cinta (inclinación 10–12 %)',d:'{int}',c:['Esfuerzo 8/10: duro pero controlable. FC aprox. 155–170.','Entre series: 3 min suave (pedaleo o caminata lenta).','Si nota silbidos, opresión en el pecho o tos persistente, pare y siga la indicación de su médico.'],q:'entrenamiento interválico bicicleta estática principiantes'}]},
+   {n:'Escaleras',e:[
+     {x:'Escaladora',m:'Escaladora (StairMaster)',d:'{em}',c:['Ritmo constante, Zona 2.','Apoye todo el pie en el escalón.','Manos solo apoyadas suavemente, sin colgarse de la baranda.'],q:'como usar la escaladora stairmaster correctamente'}]},
+   {n:'Core · 3 vueltas',e:[
+     {x:'Pallof press',m:'Polea a la altura del pecho',d:'10 por lado',c:['De lado a la polea, empuje el agarre al frente y resista la rotación.','Cadera y hombros mirando al frente.'],q:'pallof press en polea tecnica'},
+     {x:'Dead bug (bicho muerto)',m:'Colchoneta',d:'10 por lado',c:['Espalda baja pegada al suelo todo el tiempo.','Extienda brazo y pierna opuestos despacio.'],q:'dead bug ejercicio abdominal tecnica'},
+     {x:'Bird dog',m:'Colchoneta',d:'8 por lado',c:['En cuadrupedia, extienda brazo y pierna opuestos.','Sostenga 2 s sin girar la cadera.'],q:'bird dog ejercicio tecnica correcta'},
+     {x:'Plancha lateral',m:'Colchoneta',d:'20–30 s por lado',c:['Codo bajo el hombro, cadera alta.','Si cuesta, apoye las rodillas.'],q:'plancha lateral tecnica correcta'}]},
+   {n:'Vuelta a la calma · 10 min',e:[
+     {x:'Elíptica suave + estiramientos',m:'Elíptica',d:'10 min',c:['5 min suave en Zona 2 baja.','5 min de estiramientos.'],q:'vuelta a la calma estiramientos cardio'}]}
+  ]},
+ fb:{t:'Fuerza B (moderada)',tipo:'gym',dur:'≈ 1 h 20 min',res:'Piernas para escaleras y tren superior',
+  nota:'El domingo por la mañana tiene la sesión larga: no llegue al fallo y termine con la sensación de poder hacer más.',
+  b:[
+   {n:'Calentamiento · 10 min',e:[
+     {x:'Elíptica',m:'Elíptica',d:'8 min',c:['Ritmo suave a moderado.'],q:'como usar la eliptica correctamente'},
+     {x:'Movilidad de cadera y tobillo',m:'Sin máquina',d:'2 min',c:['Balanceos de pierna adelante-atrás y laterales, 10 por lado.'],q:'movilidad de tobillo y cadera ejercicios'}]},
+   {n:'Fuerza · 45 min (descanso 90 s)',e:[
+     {x:'Sentadilla goblet',m:'Mancuerna o pesa rusa',d:'{ser}',c:['Sostenga la mancuerna pegada al pecho.','Baje con el pecho alto y las rodillas en la dirección de los pies.','Suba empujando con todo el pie.'],q:'sentadilla goblet tecnica correcta'},
+     {x:'Subida al cajón (step-up)',m:'Banco o cajón de 30–40 cm + mancuernas',d:'3 × 10 por pierna',c:['Apoye todo el pie arriba y empuje con esa pierna, no con la de abajo.','Baje controlado.','Simula los escalones de Machu Picchu y Ollantaytambo.'],q:'step up al cajon con mancuernas tecnica'},
+     {x:'Press de hombro sentado',m:'Mancuernas + banco con respaldo',d:'{ser}',c:['Espalda apoyada, abdomen firme.','Empuje hacia arriba sin arquear la espalda baja.'],q:'press de hombro sentado con mancuernas tecnica'},
+     {x:'Remo a una mano',m:'Mancuerna + banco',d:'{ser}',c:['Rodilla y mano apoyadas en el banco, espalda plana.','Lleve el codo hacia la cadera.'],q:'remo con mancuerna a una mano tecnica'},
+     {x:'Curl femoral',m:'Máquina de curl femoral (tumbado o sentado)',d:'3 × 12',c:['Ajuste el rodillo justo sobre el talón.','Suba en 1 s y baje en 2–3 s.'],q:'curl femoral en maquina tecnica correcta'},
+     {x:'Elevación de talones',m:'Máquina de pantorrillas o escalón',d:'3 × 15',c:['Recorrido completo: talón abajo y luego lo más arriba posible.','Pausa de 1 s arriba.'],q:'elevacion de talones pantorrilla tecnica'}]},
+   {n:'Cardio Zona 2',e:[
+     {x:'Bicicleta estática',m:'Bicicleta estática',d:'20 min',c:['Zona 2, cadencia cómoda.','Menos impacto antes de la sesión larga del domingo.'],q:'bicicleta estatica zona 2'}]}
+  ]},
+ la:{t:'Resistencia larga',tipo:'gym',dur:'1 h 15 min – 2 h 15 min',res:'La sesión que más se parece a Cusco',
+  nota:'Tiene 4 horas disponibles, pero no necesita usarlas todas. Lleve agua; si pasa de 90 min, coma un plátano a mitad de sesión.',
+  b:[
+   {n:'Calentamiento · 10 min',e:[
+     {x:'Cinta plana progresiva',m:'Cinta de correr',d:'10 min',c:['Empiece a 4 km/h y suba hasta 5 km/h.','Sin inclinación los primeros 5 min.'],q:'calentamiento en cinta de correr'}]},
+   {n:'Test de cinta (solo semanas 1, 3 y 5)',e:[
+     {x:'Test de 15 min',m:'Cinta de correr',d:'15 min',c:['5,0 km/h con 10 % de inclinación, sin sujetarse.','Anote la FC del minuto 15 y el esfuerzo (1–10) en la pestaña Hitos.','Use siempre la misma cinta y a la misma hora, si es posible.'],q:'test caminata cinta inclinada frecuencia cardiaca'}]},
+   {n:'Bloque aeróbico principal',e:[
+     {x:'Cinta inclinada en Zona 2',m:'Cinta de correr',d:'{dc}',c:['Inclinación 8–12 %, {mo}.','Cada 15 min, beba agua.','Si la FC pasa de 135, baje la velocidad antes que la inclinación.'],q:'caminata con inclinacion en cinta para resistencia'},
+     {x:'Escaladora',m:'Escaladora (StairMaster)',d:'{de}',c:['Ritmo conversacional y constante.','Postura erguida, sin colgarse de la baranda.'],q:'como usar la escaladora stairmaster correctamente'}]},
+   {n:'Movilidad · 15 min',e:[
+     {x:'Rutina de movilidad',m:'Colchoneta',d:'15 min',c:['Flexores de cadera (estocada baja), 45 s por lado.','Pantorrillas y tobillo en la pared, 45 s por lado.','Isquiotibiales y rotación torácica.'],q:'rutina de movilidad cadera tobillo 15 minutos'}]}
+  ]},
+ ca:{t:'Casa A: Calistenia',tipo:'casa',dur:'30 min',res:'Circuito de cuerpo completo',
+  nota:'Circuito: 40 s de trabajo y 20 s de pausa por ejercicio; 1,5–2 min de descanso entre rondas. Aplique la técnica de su minicurso de calistenia.',
+  b:[
+   {n:'Calentamiento · 5 min',e:[
+     {x:'Movilidad y activación',m:'Sin material',d:'5 min',c:['Marcha en el sitio, círculos de brazos y cadera.','10 sentadillas lentas y 10 balanceos de pierna.'],q:'calentamiento en casa 5 minutos'}]},
+   {n:'Circuito · {cr}',e:[
+     {x:'Sentadilla',m:'Peso corporal',d:'40 s',c:['Pies a la anchura de hombros, pecho alto.','Si es fácil: pausa de 2 s abajo.'],q:'sentadilla peso corporal tecnica correcta'},
+     {x:'Flexiones',m:'Suelo (o manos en una mesa firme)',d:'40 s',c:['Cuerpo en línea recta.','Si no completa el tiempo, apoye las manos en una superficie elevada.'],q:'flexiones de pecho tecnica correcta principiantes'},
+     {x:'Zancada hacia atrás',m:'Peso corporal',d:'40 s alternando',c:['Dé un paso atrás y baje hasta que ambas rodillas formen unos 90°.','Tronco recto.'],q:'zancada hacia atras tecnica correcta'},
+     {x:'Remo con mochila',m:'Mochila con libros (5–8 kg)',d:'40 s',c:['Incline el tronco hacia adelante con la espalda recta.','Lleve la mochila hacia el abdomen.'],q:'remo con mochila en casa'},
+     {x:'Escaladores (mountain climbers)',m:'Peso corporal',d:'40 s',c:['Ritmo moderado, no explosivo.','Cadera a la altura de los hombros.'],q:'mountain climbers tecnica correcta'},
+     {x:'Plancha',m:'Suelo',d:'40 s',c:['Glúteos y abdomen firmes, respiración normal.'],q:'plancha abdominal tecnica correcta'}]},
+   {n:'Final · 3 min',e:[
+     {x:'Estiramientos',m:'Suelo',d:'3 min',c:['Piernas, pecho y espalda.'],q:'estiramientos 3 minutos despues de entrenar'}]}
+  ]},
+ cb:{t:'Casa B: Escaleras + movilidad',tipo:'casa',dur:'30 min',res:'Zona 2 en escaleras',
+  b:[
+   {n:'Cardio · 20 min',e:[
+     {x:'Subir y bajar escaleras',m:'Escaleras del edificio o un escalón firme (step)',d:'20 min',c:['Ritmo constante en Zona 2: debe poder hablar.','Suba caminando, no corriendo. Baje con cuidado.','Si no tiene escaleras: caminata rápida de 20 min.'],q:'subir escaleras ejercicio cardio en casa'}]},
+   {n:'Movilidad · 10 min',e:[
+     {x:'Movilidad de cadera, tobillo y espalda',m:'Suelo',d:'10 min',c:['Estocada baja con rotación.','Tobillo en la pared.','Gato-camello y rotación torácica.'],q:'rutina movilidad 10 minutos cadera tobillo espalda'}]}
+  ]},
+ de:{t:'Descanso',tipo:'desc',dur:'—',res:'Recuperación',
+  nota:'Descanso completo u opcional: caminata suave de 20–30 min. Priorice dormir 7–8 horas.',b:[]}
+};
+
+const HITOS = {
+ 1:['Completar las 4 sesiones de gimnasio y las 2 de casa','Hacer el test de cinta 1 (punto de partida) el domingo','Registrar el peso inicial (en ayunas, por la mañana)','Agendar cita con su médico o neumólogo por el asma y el viaje','Pedir hemograma con ferritina','Llegar a 140 g de proteína al menos 5 de 7 días'],
+ 2:['Completar las 6 sesiones','Caminar 35 min seguidos en Zona 2 sin detenerse','Completar los intervalos 3 × 3 sin síntomas de asma','Dormir 7 h o más al menos 5 noches','Peso ≈ 87 kg'],
+ 3:['Hacer el test de cinta 2','Consulta médica realizada y plan del inhalador claro','70 min de cinta inclinada en un solo bloque','Subir la carga en al menos 3 ejercicios de fuerza','Revisar el resultado de ferritina con su médico'],
+ 4:['80 min de cinta inclinada con mochila de 3 kg','15 min de escaladora sin parar','Completar los intervalos 3 × 4','Peso ≈ 86 kg','Comprar o revisar el inhalador de repuesto'],
+ 5:['Completar la sesión larga de 2 h','Test de cinta 3: FC 5–10 lpm menor que en el test 1','Completar los intervalos 4 × 4 (o 3 × 4) sin síntomas','Peso 85–85,5 kg'],
+ 6:['Reducir el volumen a la mitad, sin intervalos','Maleta lista (pestaña Cusco)','Dormir bien las 2 noches antes del viaje','Llegar sin dolor muscular ni fatiga']
+};
+
+const MALETA = ['Salbutamol + inhalador de repuesto','Cámara espaciadora (si la usa)','Receta o informe médico','Bufanda o buff para el frío','Casaca abrigadora y capas','Zapatillas de caminata ya usadas (no nuevas)','Mochila pequeña para los tours','Botella de agua reutilizable','Bloqueador solar y lentes de sol','Gorra o sombrero'];
+
+// ---------- helpers ----------
+const $ = s => document.querySelector(s);
+const fill = (s,w) => s.replace(/\{(\w+)\}/g,(m,k)=> w[k]!==undefined ? w[k] : m);
+function curWeek(){
+  const now=new Date(); const d=Math.floor((now - START)/86400000);
+  if(d<0) return 1; const w=Math.floor(d/7)+1; return w>6?6:w;
+}
+function dateOf(week,js){ // fecha del día dentro de la semana (lunes=inicio)
+  const off = js===0 ? 6 : js-1;
+  const d = new Date(START); d.setDate(d.getDate() + (week-1)*7 + off); return d;
+}
+const fmt = d => d.toLocaleDateString('es-PE',{day:'numeric',month:'short'});
+const tagOf = t => t==='gym'?'<span class="tag gym">Gimnasio</span>':t==='casa'?'<span class="tag casa">Casa</span>':'<span class="tag desc">Descanso</span>';
+
+let selWeek = store.get('week', curWeek());
+let selR = store.get('rut','fa');
+
+// ---------- tabs ----------
+function showTab(t){
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===t));
+  store.set('tab',t); window.scrollTo({top:0});
+}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
+
+// ---------- week selectors ----------
+function weekSel(id,onPick){
+  const el=$(id); el.innerHTML='';
+  WEEKS.forEach(w=>{
+    const b=document.createElement('button');
+    b.className = w.n===selWeek?'on':'';
+    b.innerHTML=`S${w.n} · ${w.t}<small>${w.f}</small>`;
+    b.onclick=()=>{selWeek=w.n;store.set('week',w.n);renderAll()};
+    el.appendChild(b);
+  });
+}
+
+// ---------- HOY ----------
+function renderHoy(){
+  const now=new Date(); const w=WEEKS[curWeek()-1];
+  const before = now < START;
+  const js = before ? 1 : now.getDay();
+  const s = SCHED.find(x=>x.js===js); const r=R[s.r];
+  const h = HITOS[w.n]; const done = h.filter((_,i)=>store.get(`h${w.n}_${i}`,false)).length;
+  $('#hoyBox').innerHTML = `
+   <div class="card pur">
+     <div class="row sp"><span class="tag">Semana ${w.n} · ${w.t}</span><span class="small muted">${w.f}</span></div>
+     <h2 style="margin-top:8px">${before?'Primera sesión: lunes 16 nov':s.d+' · '+fmt(now)}</h2>
+     <div class="row" style="margin:4px 0 8px">${tagOf(r.tipo)}<span class="small muted">${s.h}</span></div>
+     <h3>${r.t}</h3>
+     <p class="small muted">${r.res} · ${r.dur}</p>
+     ${r.tipo!=='desc'?`<button class="btn" id="goR">Ver rutina de hoy</button>`:`<p class="small" style="margin-top:8px">${r.nota}</p>`}
+   </div>
+   <div class="card">
+     <h3>Foco de la semana</h3>
+     <p class="small">${w.foco}</p>
+     <div class="grid2" style="margin-top:10px">
+       <div class="kpi"><b>${w.z2}</b><span>Zona 2 (lunes)</span></div>
+       <div class="kpi"><b>${w.dc}</b><span>Sesión larga (domingo)</span></div>
+       <div class="kpi"><b>${w.int.split(' (')[0]}</b><span>Intervalos (miércoles)</span></div>
+       <div class="kpi"><b>${w.peso}</b><span>Peso objetivo</span></div>
+     </div>
+   </div>
+   <div class="card">
+     <div class="row sp"><h3>Hitos de esta semana</h3><span class="small muted">${done}/${h.length}</span></div>
+     <ul class="clean small">${h.map((x,i)=>`<li style="padding:3px 0">${store.get(`h${w.n}_${i}`,false)?'<span style="color:var(--ok)">✓</span>':'○'} ${x}</li>`).join('')}</ul>
+   </div>`;
+  const g=$('#goR'); if(g) g.onclick=()=>{selWeek=w.n;selR=s.r;store.set('rut',s.r);store.set('week',w.n);renderAll();showTab('rutinas')};
+}
+
+// ---------- PLAN ----------
+function renderPlan(){
+  weekSel('#wselPlan');
+  const w=WEEKS[selWeek-1]; const today=new Date(); today.setHours(0,0,0,0);
+  $('#planBox').innerHTML = `
+   <div class="card pur"><h3>Semana ${w.n}: ${w.t}</h3><p class="small">${w.foco}</p></div>
+   <div class="card">${SCHED.map(s=>{
+     const r=R[s.r]; const d=dateOf(w.n,s.js); const isT=d.getTime()===today.getTime();
+     return `<div class="day ${isT?'today':''}" data-r="${s.r}">
+       <div class="d"><b>${s.d.slice(0,3)}</b><span>${fmt(d)}</span></div>
+       <div style="flex:1"><div class="row sp"><b class="small" style="font-size:14px">${r.t}</b>${tagOf(r.tipo)}</div>
+       <div class="small muted">${s.h} · ${detailLine(s.r,w)}</div></div></div>`;}).join('')}
+   </div>
+   ${w.n===6?'<div class="okn">Ajuste esta semana según su fecha de viaje: haga solo las sesiones previas al vuelo y no entrene el día anterior.</div>':''}`;
+  document.querySelectorAll('#planBox .day').forEach(el=>el.onclick=()=>{
+    if(el.dataset.r==='de') return; selR=el.dataset.r; store.set('rut',selR); renderRut(); showTab('rutinas');});
+}
+function detailLine(r,w){
+  return ({fa:`Fuerza ${w.ser} + cinta ${w.z2}`, in:`Intervalos ${w.int.split(' (')[0]}`, fb:`Fuerza ${w.ser} + bici 20 min`,
+    la:`Cinta ${w.dc} + escaladora ${w.de}`, ca:`Circuito ${w.cr}`, cb:'Escaleras 20 min + movilidad', de:'Descanso o caminata suave'})[r];
+}
+
+// ---------- RUTINAS ----------
+function renderRut(){
+  weekSel('#wselRut');
+  const names={fa:'Lun · Fuerza A',in:'Mié · Intervalos',fb:'Sáb · Fuerza B',la:'Dom · Larga',ca:'Mar · Casa A',cb:'Jue · Casa B'};
+  $('#rsel').innerHTML = Object.keys(names).map(k=>`<button data-k="${k}" class="${k===selR?'on':''}">${names[k]}</button>`).join('');
+  document.querySelectorAll('#rsel button').forEach(b=>b.onclick=()=>{selR=b.dataset.k;store.set('rut',selR);renderRut()});
+  const r=R[selR]; const w=WEEKS[selWeek-1]; let n=0;
+  let html = `<div class="card pur"><div class="row sp"><h3>${r.t}</h3>${tagOf(r.tipo)}</div>
+    <p class="small muted">${r.res} · ${r.dur} · Semana ${w.n}</p>${r.nota?`<p class="small" style="margin-top:6px">${r.nota}</p>`:''}</div>`;
+  r.b.forEach(b=>{
+    if(b.n.startsWith('Test') && ![1,3,5].includes(w.n)) return;
+    html += `<div class="block">${fill(b.n,w)}</div>`;
+    b.e.forEach(e=>{ n++;
+      html += `<details class="ex"><summary><div class="num">${n}</div><div class="t"><b>${e.x}</b><span>${e.m}</span></div><div class="dose">${fill(e.d,w)}</div></summary>
+        <div class="body"><ul class="dots small">${e.c.map(c=>`<li>${fill(c,w)}</li>`).join('')}</ul>
+        <a class="yt" href="${YT(e.q)}" target="_blank" rel="noopener">${ytIcon} Ver tutoriales en YouTube</a></div></details>`;
+    });
+  });
+  html += `<p class="small muted" style="margin-top:8px">Si no conoce una máquina, pida al instructor del gimnasio que le enseñe el ajuste la primera vez.</p>`;
+  $('#rutBox').innerHTML = html;
+}
+
+// ---------- HITOS ----------
+function renderHitos(){
+  const tests=[1,3,5];
+  $('#testBox').innerHTML = tests.map((t,i)=>`
+    <div style="margin-top:10px"><b class="small">Test ${i+1} · semana ${t}</b>
+    <div class="input"><label>FC minuto 15 (lpm)</label><input inputmode="numeric" data-k="t${t}fc" value="${store.get('t'+t+'fc','')}"></div>
+    <div class="input"><label>Esfuerzo percibido (1–10)</label><input inputmode="numeric" data-k="t${t}rpe" value="${store.get('t'+t+'rpe','')}"></div></div>`).join('')
+    + `<div id="testRes" class="small" style="margin-top:10px"></div>`;
+  let html='';
+  WEEKS.forEach(w=>{
+    const h=HITOS[w.n]; const done=h.filter((_,i)=>store.get(`h${w.n}_${i}`,false)).length;
+    html += `<div class="card ${w.n===curWeek()?'pur':''}"><div class="row sp"><h3>S${w.n} · ${w.t}</h3><span class="small muted">${done}/${h.length}</span></div>
+      <p class="small muted" style="margin-bottom:4px">${w.f}</p>
+      ${h.map((x,i)=>{const k=`h${w.n}_${i}`;const c=store.get(k,false);
+        return `<label class="chk ${c?'done':''}"><input type="checkbox" data-h="${k}" ${c?'checked':''}><span class="small">${x}</span></label>`}).join('')}
+      <div class="input"><label>Peso de la semana (kg) · meta ${w.peso}</label><input inputmode="decimal" data-k="peso${w.n}" value="${store.get('peso'+w.n,'')}"></div></div>`;
+  });
+  $('#hitosBox').innerHTML=html;
+  document.querySelectorAll('[data-h]').forEach(c=>c.onchange=()=>{store.set(c.dataset.h,c.checked);c.parentElement.classList.toggle('done',c.checked);renderProg();renderHoy();});
+  document.querySelectorAll('#hitos input[data-k]').forEach(i=>i.oninput=()=>{store.set(i.dataset.k,i.value);testRes()});
+  testRes();
+}
+function testRes(){
+  const a=parseFloat(store.get('t1fc','')), b=parseFloat(store.get('t5fc','')), c=parseFloat(store.get('t3fc',''));
+  let t='';
+  if(a && c) t+=`Test 2 vs Test 1: ${c-a>0?'+':''}${(c-a).toFixed(0)} lpm. `;
+  if(a && b) t+= (a-b>=5)?`<span style="color:var(--ok)">Test 3: ${(a-b).toFixed(0)} lpm menos que al inicio. Hito cumplido.</span>`:`Test 3 vs Test 1: ${(b-a)>0?'+':''}${(b-a).toFixed(0)} lpm.`;
+  const p0=parseFloat(store.get('peso1','')); let last=null;
+  for(let i=6;i>=1;i--){const v=parseFloat(store.get('peso'+i,''));if(v){last=[i,v];break}}
+  if(p0 && last && last[0]>1) t+=`<br>Peso: ${(last[1]-p0).toFixed(1)} kg desde la semana 1.`;
+  const el=$('#testRes'); if(el) el.innerHTML=t;
+}
+
+// ---------- maleta ----------
+function renderMaleta(){
+  $('#maletaBox').innerHTML = MALETA.map((x,i)=>{const k='m'+i;const c=store.get(k,false);
+    return `<label class="chk ${c?'done':''}"><input type="checkbox" data-m="${k}" ${c?'checked':''}><span class="small">${x}</span></label>`}).join('');
+  document.querySelectorAll('[data-m]').forEach(c=>c.onchange=()=>{store.set(c.dataset.m,c.checked);c.parentElement.classList.toggle('done',c.checked)});
+}
+
+// ---------- progreso ----------
+function renderProg(){
+  let tot=0,d=0; WEEKS.forEach(w=>HITOS[w.n].forEach((_,i)=>{tot++; if(store.get(`h${w.n}_${i}`,false)) d++;}));
+  $('#pbar').style.width = (100*d/tot)+'%';
+  $('#ptxt').textContent = `Hitos cumplidos: ${d}/${tot}`;
+  $('#pweek').textContent = `Semana actual: ${curWeek()} de 6`;
+}
+
+function renderAll(){renderHoy();renderPlan();renderRut();renderHitos();renderMaleta();renderProg();}
+renderAll();
+showTab(store.get('tab','hoy'));
+</script>
+</body>
+</html>
