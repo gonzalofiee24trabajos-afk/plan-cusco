@@ -2,10 +2,12 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Plan Cusco – 6 semanas</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f0d14">
+<link rel="icon" href="icono.svg">
 <style>
 :root{
   --bg:#0f0d14; --card:#1a1622; --card2:#221d2d; --line:#2e2740;
@@ -22,10 +24,10 @@ header p{color:var(--mut);font-size:13px;margin-top:2px}
 .prog{height:6px;background:var(--line);border-radius:6px;margin-top:12px;overflow:hidden}
 .prog>div{height:100%;background:linear-gradient(90deg,var(--pur),var(--pur2));border-radius:6px;transition:width .4s}
 .progtxt{font-size:12px;color:var(--mut);margin-top:6px;display:flex;justify-content:space-between}
-nav{position:sticky;top:0;z-index:10;background:rgba(15,13,20,.94);backdrop-filter:blur(8px);padding:10px 0;margin:0 -14px;border-bottom:1px solid var(--line)}
+nav{position:sticky;top:0;z-index:10;background:var(--bg);padding:10px 0;margin:0 -14px;border-bottom:1px solid var(--line)}
 nav .tabs{display:flex;gap:6px;overflow-x:auto;padding:0 14px;scrollbar-width:none}
 nav .tabs::-webkit-scrollbar{display:none}
-nav button{flex:0 0 auto;background:var(--card);color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font:600 13px Inter,sans-serif;cursor:pointer}
+nav button{flex:0 0 auto;background:var(--card);color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font:600 13px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;cursor:pointer}
 nav button.on{background:var(--pur);color:#fff;border-color:var(--pur)}
 section{display:none;padding-top:16px}
 section.on{display:block}
@@ -56,11 +58,11 @@ ul.dots li{margin:3px 0}
 .day.today{background:var(--purbg);margin:0 -14px;padding:10px 14px;border-radius:10px}
 .wsel{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}
 .wsel::-webkit-scrollbar{display:none}
-.wsel button{flex:0 0 auto;background:var(--card);border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:8px 12px;font:600 13px Inter,sans-serif;cursor:pointer;text-align:left}
+.wsel button{flex:0 0 auto;background:var(--card);border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:8px 12px;font:600 13px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;cursor:pointer;text-align:left}
 .wsel button small{display:block;font-weight:500;color:var(--mut);font-size:11px}
 .wsel button.on{border-color:var(--pur2);background:var(--purbg)}
 .rsel{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.rsel button{background:var(--card);border:1px solid var(--line);color:var(--tx);border-radius:999px;padding:7px 12px;font:600 12.5px Inter,sans-serif;cursor:pointer}
+.rsel button{background:var(--card);border:1px solid var(--line);color:var(--tx);border-radius:999px;padding:7px 12px;font:600 12.5px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;cursor:pointer}
 .rsel button.on{background:var(--pur);border-color:var(--pur)}
 .block{margin:14px 0 6px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pur2)}
 details.ex{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}
@@ -83,7 +85,7 @@ details.ex .body{padding:12px 14px}
 .chk.done span{color:var(--mut);text-decoration:line-through}
 .input{display:flex;gap:8px;align-items:center;margin-top:8px}
 .input label{font-size:12.5px;color:var(--mut);flex:1}
-.input input{width:96px;background:var(--card2);border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:7px 9px;font:600 14px Inter,sans-serif}
+.input input{width:96px;background:var(--card2);border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:7px 9px;font:600 14px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
 th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
 th{color:var(--mut);font-weight:600;font-size:12px}
@@ -94,8 +96,32 @@ th{color:var(--mut);font-weight:600;font-size:12px}
 .zones div{border-radius:10px;padding:8px;text-align:center;font-size:12px}
 .zones b{display:block;font-size:15px}
 .z2{background:#15281f;color:#9fe6c3}.z4{background:#2a2416;color:#f0cf86}.z5{background:#2a1719;color:#f2a0a0}
-.btn{display:block;width:100%;background:var(--pur);color:#fff;border:0;border-radius:12px;padding:12px;font:700 14px Inter,sans-serif;cursor:pointer;margin-top:10px}
+.btn{display:block;width:100%;background:var(--pur);color:#fff;border:0;border-radius:12px;padding:12px;font:700 14px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;cursor:pointer;margin-top:10px}
 footer{color:var(--mut);font-size:11.5px;text-align:center;padding:20px 0}
+.sub{display:none}.sub.on{display:block}
+.subnav{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}
+.subnav::-webkit-scrollbar{display:none}
+.subnav button{flex:0 0 auto;background:var(--card);border:1px solid var(--line);color:var(--mut);border-radius:10px;padding:7px 12px;font-family:inherit;font-weight:600;font-size:12.5px;cursor:pointer}
+.subnav button.on{color:var(--tx);border-color:var(--pur2);background:var(--purbg)}
+.mini{background:var(--card2);border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:6px 10px;font-family:inherit;font-weight:600;font-size:12.5px;cursor:pointer}
+.mini.pri{background:var(--pur);border-color:var(--pur);color:#fff}
+.exr{border-bottom:1px solid var(--line);padding:2px 0}
+.setbox{background:var(--card2);border-radius:10px;padding:10px;margin:4px 0 8px}
+.setin{display:flex;gap:6px;margin:8px 0}
+.setin input{flex:1;min-width:0;background:var(--card);border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:8px;font-family:inherit;font-weight:600;font-size:14px}
+.fi{background:var(--card2);border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:8px 9px;font-family:inherit;font-size:14px}
+.chart{width:100%;height:auto;display:block}
+.chk i{text-decoration:none;display:inline-block}
+#timer{position:fixed;left:0;right:0;bottom:0;z-index:20;display:none;gap:10px;align-items:center;justify-content:center;background:var(--pur);color:#fff;padding:12px 14px calc(12px + env(safe-area-inset-bottom));font-weight:700}
+#timer.on{display:flex}
+#timerT{font-size:18px;font-variant-numeric:tabular-nums}
+.alert,.note,.okn{color:#ece8f4}
+body.claro{--bg:#f6f4fa;--card:#ffffff;--card2:#efeaf7;--line:#dcd4ea;--tx:#1d1826;--mut:#6b6280;--purbg:#ece2fb;--pur2:#6a35b0}
+body.claro .card.pur{border-color:#c9b3ee}
+body.gym .mini{padding:12px 16px;font-size:15px}
+body.gym .setin input{padding:14px 10px;font-size:18px}
+body.gym .chk input{flex-basis:30px;width:30px;height:30px}
+body.gym .btn{padding:16px;font-size:16px}
 </style>
 </head>
 <body>
@@ -108,50 +134,54 @@ footer{color:var(--mut);font-size:11.5px;text-align:center;padding:20px 0}
 </header>
 <nav><div class="tabs" id="tabs">
   <button data-t="hoy" class="on">Hoy</button>
-  <button data-t="plan">Plan semanal</button>
-  <button data-t="rutinas">Rutinas</button>
-  <button data-t="hitos">Hitos</button>
-  <button data-t="nutri">Nutrición</button>
-  <button data-t="cusco">Cusco</button>
+  <button data-t="plan">Plan</button>
+  <button data-t="registro">Registro</button>
+  <button data-t="progreso">Progreso</button>
+  <button data-t="ajustes">Ajustes</button>
 </div></nav>
 
 <!-- HOY -->
 <section id="hoy" class="on">
+  <div id="hoyCusco"></div>
   <div id="hoyBox"></div>
+  <div class="card"><h3>Lista de la sesión de hoy</h3><div id="hoySesion"></div></div>
+  <div class="card"><h3>Hábitos de hoy</h3><div id="hoyHab"></div><div id="hoyKcal"></div></div>
   <div class="card">
-    <h3>Zonas de esfuerzo (referencia para 22 años)</h3>
-    <p class="small muted">FC máxima estimada ≈ 192 lpm. Si no tiene pulsómetro, use la prueba del habla.</p>
+    <h3>Zonas de esfuerzo (referencia)</h3>
+    <p class="small muted">Si no tiene pulsómetro, use la prueba del habla.</p>
     <div class="zones">
       <div class="z2"><b>115–135</b>Zona 2<br>Habla en frases</div>
       <div class="z4"><b>150–165</b>Moderado-duro<br>Frases cortas</div>
       <div class="z5"><b>165–175</b>Intervalo<br>Pocas palabras</div>
     </div>
-    <p class="small muted" style="margin-top:8px">Por el asma, los intervalos se hacen "duros pero controlables" (8/10), nunca al máximo.</p>
+    <p class="small muted" style="margin-top:8px">Los intervalos se hacen "duros pero controlables" (8/10), nunca al máximo.</p>
   </div>
 </section>
 
 <!-- PLAN -->
 <section id="plan">
+  <div class="subnav" data-p="plan"><button data-s="semana">Semana</button><button data-s="rutinas">Rutinas</button><button data-s="hitos">Hitos</button><button data-s="nutri">Alimentación</button><button data-s="cusco">Cusco</button><button data-s="post">Después del viaje</button></div>
+  <div class="sub on" id="plan-semana">
   <h2>Plan semanal</h2>
   <div class="wsel" id="wselPlan"></div>
   <div id="planBox"></div>
-</section>
+</div>
 
 <!-- RUTINAS -->
-<section id="rutinas">
+<div class="sub" id="plan-rutinas">
   <h2>Rutinas detalladas</h2>
   <p class="small muted" style="margin-bottom:10px">Las dosis (minutos, series) cambian según la semana elegida. Toque cada ejercicio para ver la técnica y el tutorial.</p>
   <div class="wsel" id="wselRut"></div>
   <div class="rsel" id="rsel"></div>
   <div id="rutBox"></div>
-</section>
+</div>
 
 <!-- HITOS -->
-<section id="hitos">
+<div class="sub" id="plan-hitos">
   <h2>Hitos por semana</h2>
   <div class="card pur">
     <h3>Meta final</h3>
-    <p class="small">Llegar a Cusco capaz de caminar 2 horas con subidas y escaleras a ritmo conversacional, con el asma controlada y unos 3–4 kg menos (≈ 84–85 kg).</p>
+    <p class="small">Llegar a Cusco capaz de caminar 2 horas con subidas y escaleras a ritmo conversacional, y con el peso dentro de su meta.</p>
   </div>
   <div class="card">
     <h3>Test de cinta (semanas 1, 3 y 5, domingo)</h3>
@@ -159,19 +189,13 @@ footer{color:var(--mut);font-size:11.5px;text-align:center;padding:20px 0}
     <div id="testBox"></div>
   </div>
   <div id="hitosBox"></div>
-</section>
+</div>
 
-<!-- NUTRICIÓN -->
-<section id="nutri">
-  <h2>Nutrición</h2>
-  <div class="grid2" style="margin-bottom:12px">
-    <div class="kpi"><b>2 200–2 300</b><span>kcal/día</span></div>
-    <div class="kpi"><b>140–150 g</b><span>proteína/día</span></div>
-    <div class="kpi"><b>230–260 g</b><span>carbohidratos</span></div>
-    <div class="kpi"><b>65–75 g</b><span>grasas</span></div>
-    <div class="kpi"><b>2,5–3 L</b><span>agua/día</span></div>
-    <div class="kpi"><b>25–35 g</b><span>fibra/día</span></div>
-  </div>
+<!-- ALIMENTACIÓN (guía) -->
+<div class="sub" id="plan-nutri">
+  <h2>Alimentación</h2>
+  <div class="card pur" id="metasBox"></div>
+  <p class="small muted" style="margin-bottom:10px">El registro diario de comidas y hábitos está en Registro, Alimentación y hábitos.</p>
 
   <div class="card">
     <h3>El plato guía</h3>
@@ -229,11 +253,13 @@ footer{color:var(--mut);font-size:11.5px;text-align:center;padding:20px 0}
   </div>
 
   <div class="note"><b>Laboratorio:</b> pida un hemograma con ferritina esta semana. La falta de hierro limita el rendimiento en altura. No tome suplementos de hierro sin ver el resultado con su médico.</div>
-</section>
+</div>
 
 <!-- CUSCO -->
-<section id="cusco">
+<div class="sub" id="plan-cusco">
   <h2>Cusco: 18 días</h2>
+  <div id="cuscoTop"></div>
+  <div class="card" id="aclBox"></div>
   <div class="card">
     <h3>Altitudes de su recorrido</h3>
     <table>
@@ -256,13 +282,13 @@ footer{color:var(--mut);font-size:11.5px;text-align:center;padding:20px 0}
   </div>
 
   <div class="card">
-    <h3>Asma en altura</h3>
+    <h3>Salud respiratoria en altura</h3>
     <ul class="dots small">
-      <li>Lleve el salbutamol siempre encima, más un inhalador de repuesto en otro bolso.</li>
+      <li>Lleve su medicación habitual siempre encima, con un repuesto en otro bolso.</li>
       <li>Lleve su receta o informe médico.</li>
       <li>El aire de Cusco es frío y seco, sobre todo de noche y de madrugada: cúbrase nariz y boca con una bufanda o un buff.</li>
       <li>Antes de cada subida larga, caliente 5–10 min caminando suave.</li>
-      <li>Siga lo que le indique su médico sobre el uso del inhalador antes del esfuerzo.</li>
+      <li>Siga lo que le indique su médico sobre su medicación antes del esfuerzo.</li>
     </ul>
   </div>
 
@@ -281,11 +307,68 @@ footer{color:var(--mut);font-size:11.5px;text-align:center;padding:20px 0}
     <div id="maletaBox"></div>
   </div>
 
-  <div class="alert"><b>Señales de alerta (busque atención médica):</b> dolor de cabeza intenso que no cede, vómitos repetidos, confusión o torpeza al caminar, falta de aire en reposo, tos con flema espumosa o rosada, o crisis de asma que no mejora con el salbutamol.</div>
+  <div class="alert"><b>Señales de alerta (busque atención médica):</b> dolor de cabeza intenso que no cede, vómitos repetidos, confusión o torpeza al caminar, falta de aire en reposo, tos con flema espumosa o rosada, o dificultad para respirar que no mejora.</div>
+</div>
+
+<!-- DESPUÉS DEL VIAJE -->
+<div class="sub" id="plan-post">
+  <h2>Después del viaje</h2>
+  <div id="genBox"></div>
+</div>
 </section>
 
-<footer>Guía general de entrenamiento y nutrición. No reemplaza la evaluación de su médico, sobre todo en relación con el asma.</footer>
+<!-- REGISTRO -->
+<section id="registro">
+  <div class="subnav" data-p="registro"><button data-s="sesion">Sesión</button><button data-s="peso">Peso</button><button data-s="alim">Alimentación y hábitos</button></div>
+  <div class="sub on" id="registro-sesion">
+    <h2>Registro de sesión</h2>
+    <div class="card">
+      <div class="row" style="flex-wrap:wrap;margin-bottom:10px"><input type="date" class="fi" id="regFecha"><select class="fi" id="regRut" style="flex:1;min-width:0"></select></div>
+      <div id="regSesion"></div>
+    </div>
+    <div class="card"><h3>Sesiones registradas</h3><div id="regHist"></div></div>
+  </div>
+  <div class="sub" id="registro-peso">
+    <h2>Registro de peso</h2>
+    <div class="card">
+      <div class="row" style="flex-wrap:wrap"><input type="date" class="fi" id="pesoF"><input class="fi" id="pesoKg" inputmode="decimal" placeholder="kg" style="width:90px"><button class="mini pri" id="pesoOk">Guardar peso</button></div>
+      <p class="small muted" style="margin-top:6px">Un registro por fecha; si la fecha ya existe, se reemplaza.</p>
+    </div>
+    <div class="card"><h3>Tendencia</h3><div id="pesoGraf"></div></div>
+    <div class="card"><h3>Historial</h3><div id="pesoLista"></div></div>
+  </div>
+  <div class="sub" id="registro-alim">
+    <h2>Alimentación y hábitos</h2>
+    <div class="card"><div class="row sp"><h3>Día</h3><input type="date" class="fi" id="habFecha"></div><div id="habDia"></div></div>
+    <div class="card"><h3>Comidas del día</h3><div id="habComidas"></div></div>
+    <div class="card"><h3>Calorías, pasos y actividad</h3><div id="habKcal"></div></div>
+    <div class="card"><h3>Últimos 14 días</h3><div id="habTabla"></div></div>
+  </div>
+</section>
+
+<!-- PROGRESO -->
+<section id="progreso">
+  <h2>Progreso</h2>
+  <div class="card"><h3>Resumen semanal</h3><div id="progResumen"></div></div>
+  <div class="card"><h3>Peso</h3><div id="progPeso"></div></div>
+  <div class="card"><h3>Avance por ejercicio</h3><div id="progEx"></div></div>
+  <div class="card"><h3>Récords personales</h3><div id="progPR"></div></div>
+  <div class="card"><h3>Volumen semanal</h3><div id="progVol"></div></div>
+  <div class="card"><h3>Avisos de estancamiento</h3><div id="progEst"></div></div>
+  <div class="card"><h3>Calorías y pasos</h3><div id="progKcal"></div></div>
+  <div class="card"><h3>Hábitos</h3><div id="progHab"></div></div>
+  <div class="card"><h3>Test de cinta</h3><div id="progTest"></div></div>
+</section>
+
+<!-- AJUSTES -->
+<section id="ajustes">
+  <h2>Ajustes</h2>
+  <div id="ajBox"></div>
+</section>
+
+<footer>Guía general de entrenamiento y nutrición. No reemplaza la evaluación de su médico.</footer>
 </div>
+<div id="timer"><span id="timerT"></span><button class="mini" id="tMas">+30 s</button><button class="mini" id="tStop">Detener</button></div>
 
 <script>
 const START = new Date(2026,10,16); // lunes 16 nov 2026
@@ -298,17 +381,17 @@ const store = {
 };
 
 const WEEKS = [
- {n:1,f:'16–22 nov',t:'Adaptación',z2:'30 min',int:'3 × 2 min',dc:'45 min',de:'10 min',ser:'2 × 12',em:'5 min',cr:'3 rondas',mo:'sin mochila',peso:'87–87,5 kg',
+ {n:1,f:'16–22 nov',t:'Adaptación',z2:'30 min',int:'3 × 2 min',dc:'45 min',de:'10 min',ser:'2 × 12',em:'5 min',cr:'3 rondas',mo:'sin mochila',peso:'según su meta',
   foco:'Aprender la técnica, conocer las máquinas y medir su punto de partida. Cargas cómodas (podría hacer 4–5 repeticiones más).'},
- {n:2,f:'23–29 nov',t:'Base aeróbica',z2:'35 min',int:'3 × 3 min',dc:'60 min',de:'12 min',ser:'3 × 10–12',em:'8 min',cr:'4 rondas',mo:'sin mochila',peso:'≈ 87 kg',
+ {n:2,f:'23–29 nov',t:'Base aeróbica',z2:'35 min',int:'3 × 3 min',dc:'60 min',de:'12 min',ser:'3 × 10–12',em:'8 min',cr:'4 rondas',mo:'sin mochila',peso:'según su meta',
   foco:'Sumar volumen de Zona 2. Se agrega una serie a los ejercicios de fuerza.'},
- {n:3,f:'30 nov–6 dic',t:'Construcción',z2:'40 min',int:'4 × 3 min',dc:'70 min',de:'15 min',ser:'3 × 10–12 (más carga)',em:'10 min',cr:'4 rondas',mo:'sin mochila',peso:'≈ 86,5 kg',
+ {n:3,f:'30 nov–6 dic',t:'Construcción',z2:'40 min',int:'4 × 3 min',dc:'70 min',de:'15 min',ser:'3 × 10–12 (más carga)',em:'10 min',cr:'4 rondas',mo:'sin mochila',peso:'según su meta',
   foco:'Test de cinta 2. Subir carga en los ejercicios de fuerza manteniendo la técnica.'},
- {n:4,f:'7–13 dic',t:'Específica',z2:'40 min',int:'3 × 4 min',dc:'80 min',de:'15 min',ser:'3 × 8–10',em:'10 min',cr:'4 rondas',mo:'con mochila de 3 kg',peso:'≈ 86 kg',
+ {n:4,f:'7–13 dic',t:'Específica',z2:'40 min',int:'3 × 4 min',dc:'80 min',de:'15 min',ser:'3 × 8–10',em:'10 min',cr:'4 rondas',mo:'con mochila de 3 kg',peso:'según su meta',
   foco:'Simular el esfuerzo de Cusco: inclinación, escaleras y mochila.'},
- {n:5,f:'14–20 dic',t:'Pico',z2:'45 min',int:'4 × 4 min (3 × 4 si nota síntomas)',dc:'90 min',de:'20 min',ser:'3 × 8–10',em:'12 min',cr:'4 rondas',mo:'con mochila de 3–5 kg',peso:'85–85,5 kg',
+ {n:5,f:'14–20 dic',t:'Pico',z2:'45 min',int:'4 × 4 min (3 × 4 si nota síntomas)',dc:'90 min',de:'20 min',ser:'3 × 8–10',em:'12 min',cr:'4 rondas',mo:'con mochila de 3–5 kg',peso:'según su meta',
   foco:'Semana de mayor carga. Test de cinta 3 para comprobar la mejora.'},
- {n:6,f:'21–27 dic',t:'Descarga y viaje',z2:'30 min',int:'sin intervalos (solo Zona 2)',dc:'40 min',de:'—',ser:'2 × 10 (ligero)',em:'—',cr:'2 rondas',mo:'sin mochila',peso:'≈ 85 kg',
+ {n:6,f:'21–27 dic',t:'Descarga y viaje',z2:'30 min',int:'sin intervalos (solo Zona 2)',dc:'40 min',de:'—',ser:'2 × 10 (ligero)',em:'—',cr:'2 rondas',mo:'sin mochila',peso:'según su meta',
   foco:'Reducir el volumen a la mitad para llegar descansado. Preparar la maleta.'}
 ];
 
@@ -344,7 +427,7 @@ const R = {
  in:{t:'Intervalos + Core',tipo:'gym',dur:'≈ 1 h 20 min',res:'Mejora de capacidad aeróbica máxima',
   b:[
    {n:'Calentamiento progresivo · 15 min',e:[
-     {x:'Elíptica o bicicleta',m:'Elíptica / bicicleta estática',d:'15 min',c:['5 min suave, 5 min moderado, 5 min con 3 aceleraciones de 20 s.','Un calentamiento largo reduce el riesgo de broncoespasmo por ejercicio.','Tenga el salbutamol a mano.'],q:'calentamiento progresivo eliptica'}]},
+     {x:'Elíptica o bicicleta',m:'Elíptica / bicicleta estática',d:'15 min',c:['5 min suave, 5 min moderado, 5 min con 3 aceleraciones de 20 s.','Un calentamiento largo prepara mejor la respiración.','Tenga su medicación habitual a mano.'],q:'calentamiento progresivo eliptica'}]},
    {n:'Intervalos',e:[
      {x:'Intervalos en bicicleta o cinta inclinada',m:'Bicicleta estática o cinta (inclinación 10–12 %)',d:'{int}',c:['Esfuerzo 8/10: duro pero controlable. FC aprox. 155–170.','Entre series: 3 min suave (pedaleo o caminata lenta).','Si nota silbidos, opresión en el pecho o tos persistente, pare y siga la indicación de su médico.'],q:'entrenamiento interválico bicicleta estática principiantes'}]},
    {n:'Escaleras',e:[
@@ -413,15 +496,15 @@ const R = {
 };
 
 const HITOS = {
- 1:['Completar las 4 sesiones de gimnasio y las 2 de casa','Hacer el test de cinta 1 (punto de partida) el domingo','Registrar el peso inicial (en ayunas, por la mañana)','Agendar cita con su médico o neumólogo por el asma y el viaje','Pedir hemograma con ferritina','Llegar a 140 g de proteína al menos 5 de 7 días'],
- 2:['Completar las 6 sesiones','Caminar 35 min seguidos en Zona 2 sin detenerse','Completar los intervalos 3 × 3 sin síntomas de asma','Dormir 7 h o más al menos 5 noches','Peso ≈ 87 kg'],
- 3:['Hacer el test de cinta 2','Consulta médica realizada y plan del inhalador claro','70 min de cinta inclinada en un solo bloque','Subir la carga en al menos 3 ejercicios de fuerza','Revisar el resultado de ferritina con su médico'],
- 4:['80 min de cinta inclinada con mochila de 3 kg','15 min de escaladora sin parar','Completar los intervalos 3 × 4','Peso ≈ 86 kg','Comprar o revisar el inhalador de repuesto'],
- 5:['Completar la sesión larga de 2 h','Test de cinta 3: FC 5–10 lpm menor que en el test 1','Completar los intervalos 4 × 4 (o 3 × 4) sin síntomas','Peso 85–85,5 kg'],
+ 1:['Completar las 4 sesiones de gimnasio y las 2 de casa','Hacer el test de cinta 1 (punto de partida) el domingo','Registrar el peso inicial (en ayunas, por la mañana)','Agendar cita con su médico antes del viaje','Pedir hemograma con ferritina','Llegar a 140 g de proteína al menos 5 de 7 días'],
+ 2:['Completar las 6 sesiones','Caminar 35 min seguidos en Zona 2 sin detenerse','Completar los intervalos 3 × 3 sin síntomas','Dormir 7 h o más al menos 5 noches','Peso dentro de su meta'],
+ 3:['Hacer el test de cinta 2','Consulta médica realizada y plan de medicación claro','70 min de cinta inclinada en un solo bloque','Subir la carga en al menos 3 ejercicios de fuerza','Revisar el resultado de ferritina con su médico'],
+ 4:['80 min de cinta inclinada con mochila de 3 kg','15 min de escaladora sin parar','Completar los intervalos 3 × 4','Peso dentro de su meta','Revisar la medicación de repuesto'],
+ 5:['Completar la sesión larga de 2 h','Test de cinta 3: FC 5–10 lpm menor que en el test 1','Completar los intervalos 4 × 4 (o 3 × 4) sin síntomas','Peso dentro de su meta'],
  6:['Reducir el volumen a la mitad, sin intervalos','Maleta lista (pestaña Cusco)','Dormir bien las 2 noches antes del viaje','Llegar sin dolor muscular ni fatiga']
 };
 
-const MALETA = ['Salbutamol + inhalador de repuesto','Cámara espaciadora (si la usa)','Receta o informe médico','Bufanda o buff para el frío','Casaca abrigadora y capas','Zapatillas de caminata ya usadas (no nuevas)','Mochila pequeña para los tours','Botella de agua reutilizable','Bloqueador solar y lentes de sol','Gorra o sombrero'];
+const MALETA = ['Medicación habitual y repuesto','Accesorios de la medicación (si los usa)','Receta o informe médico','Bufanda o buff para el frío','Casaca abrigadora y capas','Zapatillas de caminata ya usadas (no nuevas)','Mochila pequeña para los tours','Botella de agua reutilizable','Bloqueador solar y lentes de sol','Gorra o sombrero'];
 
 // ---------- helpers ----------
 const $ = s => document.querySelector(s);
@@ -446,7 +529,6 @@ function showTab(t){
   document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===t));
   store.set('tab',t); window.scrollTo({top:0});
 }
-document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
 
 // ---------- week selectors ----------
 function weekSel(id,onPick){
@@ -586,8 +668,7 @@ function renderProg(){
 }
 
 function renderAll(){renderHoy();renderPlan();renderRut();renderHitos();renderMaleta();renderProg();}
-renderAll();
-showTab(store.get('tab','hoy'));
 </script>
+<script src="extra.js"></script>
 </body>
 </html>
