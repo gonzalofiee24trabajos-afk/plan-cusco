@@ -1,6 +1,6 @@
-/* Plan Cusco - ampliacion v2.
+/* Plan Cusco - ampliacion v3.
    Usa el mismo almacenamiento de la version original (localStorage, prefijo pc_).
-   Claves nuevas: pc_v, pc_log, pc_pesos, pc_hab, pc_metas, pc_acl, pc_gen, pc_cfg, pc_sub_*. */
+   Claves nuevas: pc_v, pc_log, pc_pesos, pc_hab, pc_metas, pc_acl, pc_gen, pc_cfg, pc_sub_*, pc_intro. */
 
 // ---------- utilidades ----------
 const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -16,10 +16,10 @@ const lunesDe = s => { const d = pd(s); const off = (d.getDay() + 6) % 7; d.setD
 const nDias = n => n + (n === 1 ? ' día' : ' días');
 const DN = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
-const CFG0 = { viaje: '2026-12-22', regreso: '2027-01-08', desc: 90, claro: false, gym: false };
+const CFG0 = { viaje: '2026-12-22', regreso: '2027-01-08', desc: 90, claro: false, gym: false, fcmax: 193 };
 const cfg = () => Object.assign({}, CFG0, store.get('cfg', {}));
 const setCfg = (k, v) => { const c = store.get('cfg', {}); c[k] = v; store.set('cfg', c); };
-const METAS0 = { kefir: '150 ml', azucar: '', agua: '', peso: '', notas: '', kcalMin: '', kcalMax: '', balMin: '', balMax: '', base: '' };
+const METAS0 = { kefir: '150 ml', azucar: '', agua: '', peso: '', notas: '', kcalMin: '', kcalMax: '', balMin: '', balMax: '', base: '', actPct: '' };
 const metas = () => Object.assign({}, METAS0, store.get('metas', {}));
 
 // ---------- migracion (no borra claves antiguas) ----------
@@ -34,6 +34,40 @@ function migrar() {
     store.set('pesos', ps);
     store.set('v', 2);
   }
+}
+
+// ---------- zonas de frecuencia cardiaca (porcentaje de la FC maxima de Ajustes) ----------
+const ZD = [
+  [.60, .70, 'z2', 'Zona 2 · base aeróbica', 'Puede hablar en frases completas', 'La mayor parte del cardio: cinta inclinada, bicicleta, escaleras y la sesión larga.'],
+  [.70, .78, 'z3', 'Zona 3 · transición', 'Habla, pero con esfuerzo', 'No es un objetivo. Si un bloque de Zona 2 sube hasta aquí, baje la velocidad.'],
+  [.78, .85, 'z4', 'Zona 4 · moderado-duro', 'Solo frases cortas', 'Aparece en subidas o en la escaladora; no se busca a propósito.'],
+  [.85, .90, 'z5', 'Zona 5 · intervalos', 'Pocas palabras', 'Solo en las series de intervalos del miércoles (esfuerzo 8/10).']
+];
+function fcMax() { const v = Math.round(num(cfg().fcmax)); return v >= 140 && v <= 220 ? v : 193; }
+function zonas() { const f = fcMax(); return ZD.map(z => ({ lo: Math.round(f * z[0]), hi: Math.round(f * z[1]), c: z[2], t: z[3], h: z[4], u: z[5] })); }
+function zonasCalc() { const z = zonas(); WEEKS.forEach(w => { w.z2r = z[0].lo + '–' + z[0].hi; w.z2hi = z[0].hi; w.intr = z[3].lo + '–' + z[3].hi; }); }
+function renderZonas() {
+  const el = $('#zonasBox'); if (!el) return; const z = zonas();
+  el.innerHTML = `<p class="small">Los números son su <b>frecuencia cardiaca (FC)</b> en latidos por minuto (lpm), la que muestra el reloj o un pulsómetro. Cada zona indica la intensidad del esfuerzo y para qué se usa en el plan.</p>
+   ${z.map(x => `<div class="zl ${x.c}"><div class="zr">${x.lo}–${x.hi}</div><div class="zt"><b>${x.t}</b><span>${x.h}. ${x.u}</span></div></div>`).join('')}
+   <ul class="dots small" style="margin-top:10px">
+    <li><b>Sin pulsómetro:</b> use la prueba del habla (la primera frase de cada zona).</li>
+    <li>Los intervalos se hacen "duros pero controlables" (8/10), nunca al máximo.</li>
+    <li>Calculadas con una FC máxima de <b>${fcMax()} lpm</b> (Zona 2 = 60–70 %, Zona 5 = 85–90 %). Es una estimación que puede variar unos ±10 lpm: si la zona no coincide con la sensación, manda la prueba del habla. La FC máxima se cambia en Ajustes.</li>
+   </ul>`;
+}
+
+// ---------- guia de inicio (se oculta con un toque) ----------
+function renderIntro() {
+  const el = $('#hoyIntro'); if (!el) return;
+  if (store.get('intro', false)) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="card" style="border-color:var(--pur2)"><h3>Cómo usar la aplicación</h3><ol class="small" style="padding-left:18px">
+    <li><b>Una vez:</b> en Ajustes, revise las fechas del viaje, su FC máxima, su gasto base y sus rangos de calorías.</li>
+    <li><b>Cada día:</b> todo está en Hoy. Marque los ejercicios hechos y los hábitos. Registrar series (kg, repeticiones) es opcional.</li>
+    <li><b>1–2 veces por semana:</b> registre su peso en Registro, Peso.</li>
+    <li><b>Cuando lo necesite:</b> Plan tiene las rutinas y las guías; Progreso, los gráficos.</li></ol>
+    <button class="btn" id="introOk">Entendido, ocultar</button></div>`;
+  $('#introOk').onclick = () => { store.set('intro', true); renderIntro(); };
 }
 
 // ---------- navegacion ----------
@@ -180,7 +214,7 @@ function renderPeso() {
 $('#pesoOk').onclick = () => {
   const f = $('#pesoF').value, kg = num($('#pesoKg').value);
   if (!f || !(kg > 20 && kg < 400)) { alert('Ingrese una fecha y un peso válido en kg.'); return; }
-  const ps = store.get('pesos', []).filter(p => p.f !== f); ps.push({ f, kg }); store.set('pesos', ps); $('#pesoKg').value = ''; renderPeso();
+  const ps = store.get('pesos', []).filter(p => p.f !== f); ps.push({ f, kg }); store.set('pesos', ps); $('#pesoKg').value = ''; renderPeso(); testRes();
 };
 function pesoChart() {
   const ps = tendencia(getPesos()); if (!ps.length) return '<p class="small muted">Registre su peso para ver el gráfico.</p>';
@@ -322,12 +356,23 @@ function renderHab() {
 }
 // ---------- calorias, pasos y balance (rangos definidos por el usuario) ----------
 const sg = n => (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(Math.round(n));
+const nm = v => num(String(v == null ? '' : v).replace('−', '-'));
+const vacio = v => String(v == null ? '' : v).trim() === '';
+// Porcentaje de las calorias activas del reloj que se suma al gasto (vacio = 100 %).
+function actPct() { const m = metas(); return vacio(m.actPct) ? 100 : Math.min(100, Math.max(0, nm(m.actPct))); }
 function kcalDia(f) {
   const d = getHab()[f] || {}, m = metas(), kc = d.kc || {};
-  const ing = ['des', 'alm', 'cen', 'ext'].reduce((a, k) => a + num(kc[k]), 0), act = num(d.act), base = num(m.base);
-  return { ing, act, pasos: num(d.pasos), base, bal: ing > 0 && base > 0 ? ing - (base + act) : null };
+  const ing = ['des', 'alm', 'cen', 'ext'].reduce((a, k) => a + num(kc[k]), 0), act = num(d.act), actC = act * actPct() / 100, base = num(m.base);
+  return { ing, act, actC, pasos: num(d.pasos), base, bal: ing > 0 && base > 0 ? ing - (base + actC) : null };
 }
-const nm = v => num(String(v == null ? '' : v).replace('−', '-'));
+// El rango de ingesta se define para un dia sin ejercicio; en dias con ejercicio se desplaza con las calorias activas contadas.
+const desplaza = (v, d) => vacio(v) ? '' : String(Math.round(nm(v) + d));
+function rangoIng(k) { const m = metas(); return [desplaza(m.kcalMin, k.actC), desplaza(m.kcalMax, k.actC)]; }
+// Ingesta que cumple el balance objetivo del dia: gasto base + activas contadas + balance.
+function objIng(k) {
+  const m = metas(); if (!(k.base > 0) || (vacio(m.balMin) && vacio(m.balMax))) return null;
+  return [desplaza(m.balMin, k.base + k.actC), desplaza(m.balMax, k.base + k.actC)];
+}
 function enRango(v, a, b) {
   a = String(a == null ? '' : a).trim(); b = String(b == null ? '' : b).trim();
   if (a === '' && b === '') return null;
@@ -337,12 +382,21 @@ function enRango(v, a, b) {
 const sgR = v => String(nm(v)).replace('-', '−');
 const rangoTxt = (a, b, u) => (String(a).trim() !== '' && String(b).trim() !== '' ? 'de ' + sgR(a) + ' a ' + sgR(b) : String(a).trim() !== '' ? 'desde ' + sgR(a) : 'hasta ' + sgR(b)) + ' ' + u;
 const estTxt = r => r === 0 ? '<b style="color:var(--ok)">dentro del rango</b>' : r < 0 ? '<b style="color:var(--warn)">por debajo del rango</b>' : '<b style="color:var(--warn)">por encima del rango</b>';
+function quedaTxt(k, o) {
+  if (!o || !(k.ing > 0)) return '';
+  const lo = vacio(o[0]) ? null : nm(o[0]), hi = vacio(o[1]) ? null : nm(o[1]);
+  const a = lo !== null && hi !== null ? Math.min(lo, hi) : lo, b = lo !== null && hi !== null ? Math.max(lo, hi) : hi;
+  if (a !== null && k.ing < a) return `Le quedan entre ${Math.round(a - k.ing)}${b !== null ? ' y ' + Math.round(b - k.ing) : ''} kcal para llegar al objetivo.`;
+  if (b !== null && k.ing > b) return `Supera el objetivo en ${Math.round(k.ing - b)} kcal.`;
+  return 'La ingesta registrada ya está dentro del objetivo.';
+}
 function kcalHTML(f) {
-  const k = kcalDia(f), m = metas(); let h = '';
-  if (!k.ing && !k.act && !k.pasos) return '<p class="small muted">Sin calorías ni pasos registrados para este día (Registro, Alimentación y hábitos).</p>';
-  const rI = enRango(k.ing, m.kcalMin, m.kcalMax);
-  h += `<p class="small"><b>Ingesta:</b> ${k.ing ? Math.round(k.ing) + ' kcal' : 'sin registrar'}${k.ing && rI !== null ? ' · meta ' + rangoTxt(m.kcalMin, m.kcalMax, 'kcal') + ': ' + estTxt(rI) : ''}</p>`;
-  h += `<p class="small"><b>Gasto:</b> ${k.base ? Math.round(k.base) + ' kcal de gasto base' : 'gasto base sin definir'} + ${Math.round(k.act)} kcal activas${k.pasos ? ' · ' + Math.round(k.pasos) + ' pasos' : ''}</p>`;
+  const k = kcalDia(f), m = metas(), o = objIng(k); let h = '';
+  if (o) h += `<p class="small"><b>Ingesta que cumple su balance hoy:</b> ${rangoTxt(o[0], o[1], 'kcal')}${k.actC ? ` (incluye ${Math.round(k.actC)} kcal activas contadas)` : ' (sube al registrar las calorías activas)'}.${k.ing > 0 ? ' ' + quedaTxt(k, o) : ''}</p>`;
+  if (!k.ing && !k.act && !k.pasos) return h + '<p class="small muted">Sin calorías ni pasos registrados hoy (Registro, Alimentación y hábitos).</p>';
+  const ri = rangoIng(k), rI = enRango(k.ing, ri[0], ri[1]);
+  h += `<p class="small"><b>Ingesta:</b> ${k.ing ? Math.round(k.ing) + ' kcal' : 'sin registrar'}${k.ing && rI !== null ? ' · rango ' + rangoTxt(ri[0], ri[1], 'kcal') + ': ' + estTxt(rI) : ''}</p>`;
+  h += `<p class="small"><b>Gasto:</b> ${k.base ? Math.round(k.base) + ' kcal de gasto base' : 'gasto base sin definir'} + ${Math.round(k.actC)} kcal activas${k.pasos ? ' · ' + Math.round(k.pasos) + ' pasos' : ''}</p>`;
   if (k.bal !== null) { const rB = enRango(k.bal, m.balMin, m.balMax); h += `<p class="small"><b>Balance:</b> ${sg(k.bal)} kcal (${k.bal < 0 ? 'déficit' : k.bal > 0 ? 'superávit' : 'equilibrio'})${rB !== null ? ' · objetivo ' + rangoTxt(m.balMin, m.balMax, 'kcal') + ': ' + estTxt(rB) : ''}</p>`; }
   else if (!k.base) h += '<p class="small muted">Para calcular el balance, defina su gasto base diario en Ajustes.</p>';
   else h += '<p class="small muted">Registre las calorías de las comidas para calcular el balance.</p>';
@@ -361,13 +415,14 @@ function sugerirKcal(k) {
 }
 function irAjustesKcal() { showTab('ajustes'); const c = $('#ajKcal'); if (c) c.scrollIntoView(); }
 function resumenKcal(f) {
-  const k = kcalDia(f), m = metas();
-  const rI = k.ing > 0 ? enRango(k.ing, m.kcalMin, m.kcalMax) : null, rB = k.bal !== null ? enRango(k.bal, m.balMin, m.balMax) : null;
+  const k = kcalDia(f), m = metas(), ri = rangoIng(k), o = objIng(k), p = actPct();
+  const rI = k.ing > 0 ? enRango(k.ing, ri[0], ri[1]) : null, rB = k.bal !== null ? enRango(k.bal, m.balMin, m.balMax) : null;
   const est = r => r === null ? '' : r === 0 ? '<b style="color:var(--ok)">Dentro del rango</b>' : '<b style="color:var(--warn)">Fuera del rango (' + (r < 0 ? 'por debajo' : 'por encima') + ')</b>';
-  const hayI = enRango(0, m.kcalMin, m.kcalMax) !== null, hayB = enRango(0, m.balMin, m.balMax) !== null;
+  const hayI = enRango(0, ri[0], ri[1]) !== null, hayB = enRango(0, m.balMin, m.balMax) !== null;
   let h = `<table>
-    <tr><td><b>Ingesta total</b><br><span class="small muted">suma de las comidas</span></td><td><b>${k.ing > 0 ? Math.round(k.ing) + ' kcal' : 'Sin registrar'}</b><br><span class="small">${k.ing > 0 ? (hayI ? est(rI) + '<br><span class="muted">rango: ' + rangoTxt(m.kcalMin, m.kcalMax, 'kcal') + '</span>' : '<span class="muted">sin rango definido</span>') : ''}</span></td></tr>
-    <tr><td><b>Gasto</b><br><span class="small muted">gasto base + calorías activas</span></td><td><b>${k.base > 0 ? Math.round(k.base + k.act) + ' kcal' : 'Sin calcular'}</b><br><span class="small muted">${k.base > 0 ? Math.round(k.base) : 'sin definir'} + ${Math.round(k.act)}</span></td></tr>
+    ${o ? `<tr><td><b>Objetivo de ingesta</b><br><span class="small muted">gasto + balance objetivo</span></td><td><b>${rangoTxt(o[0], o[1], 'kcal')}</b><br><span class="small muted">${k.ing > 0 ? quedaTxt(k, o) : 'Aún sin comidas registradas.'}</span></td></tr>` : ''}
+    <tr><td><b>Ingesta total</b><br><span class="small muted">suma de las comidas</span></td><td><b>${k.ing > 0 ? Math.round(k.ing) + ' kcal' : 'Sin registrar'}</b><br><span class="small">${k.ing > 0 ? (hayI ? est(rI) + '<br><span class="muted">rango del día: ' + rangoTxt(ri[0], ri[1], 'kcal') + (k.actC ? ' (incluye las activas)' : '') + '</span>' : '<span class="muted">sin rango definido</span>') : ''}</span></td></tr>
+    <tr><td><b>Gasto</b><br><span class="small muted">gasto base + calorías activas</span></td><td><b>${k.base > 0 ? Math.round(k.base + k.actC) + ' kcal' : 'Sin calcular'}</b><br><span class="small muted">${k.base > 0 ? Math.round(k.base) : 'sin definir'} + ${Math.round(k.actC)}${p < 100 && k.act ? ' (' + Math.round(p) + ' % de ' + Math.round(k.act) + ')' : ''}</span></td></tr>
     <tr><td><b>Balance</b><br><span class="small muted">ingesta − gasto</span></td><td><b>${k.bal !== null ? sg(k.bal) + ' kcal (' + (k.bal < 0 ? 'déficit' : k.bal > 0 ? 'superávit' : 'equilibrio') + ')' : 'Sin calcular'}</b><br><span class="small">${k.bal !== null ? (hayB ? est(rB) + '<br><span class="muted">objetivo: ' + rangoTxt(m.balMin, m.balMax, 'kcal') + '</span>' : '<span class="muted">sin objetivo definido</span>') : ''}</span></td></tr></table>`;
   if (!(k.base > 0)) h += '<div class="note" style="margin:10px 0 0">Falta definir el gasto base diario; sin ese dato no se puede calcular el gasto ni el balance. <button class="mini" data-ir="ajustes" style="margin-top:6px">Definir en Ajustes</button></div>';
   if (k.ing > 0 && rI === -1) h += '<div class="okn" style="margin:10px 0 0;border-left-color:var(--mut);background:var(--card2);color:var(--tx)">La ingesta registrada este día queda por debajo del mínimo que usted definió. Puede que aún falten comidas por registrar. Si ocurre con frecuencia, conviene consultarlo con un profesional.</div>';
@@ -376,7 +431,7 @@ function resumenKcal(f) {
 }
 function pintarKcal() {
   const t = $('#habKcalTop'); if (t) { t.innerHTML = resumenKcal(habF); const b = t.querySelector('[data-ir]'); if (b) b.onclick = irAjustesKcal; }
-  const a = $('#habKcalRes'); if (a) a.innerHTML = '<p class="small muted">El resumen del día está al inicio de esta pantalla. Los pasos se guardan como referencia y no se suman al gasto.</p>';
+  const a = $('#habKcalRes'); if (a) a.innerHTML = '<p class="small muted">Los pasos se guardan como referencia y no se suman al gasto, para no contar dos veces la misma actividad.</p>';
   const b = $('#hoyKcal'); if (b) b.innerHTML = '<div style="border-top:1px solid var(--line);padding-top:8px;margin-top:4px">' + kcalHTML(hoyISO()) + '</div>';
 }
 function progKcalHTML() {
@@ -385,14 +440,14 @@ function progKcalHTML() {
   const cI = K.filter(k => k.ing > 0), cB = K.filter(k => k.bal !== null), cP = K.filter(k => k.pasos > 0), cA = K.filter(k => k.act > 0);
   if (!cI.length && !cP.length && !cA.length) return '<p class="small muted">Registre calorías, pasos o calorías activas para ver este apartado.</p>';
   const pr = (a, fn) => a.length ? Math.round(a.reduce((s, x) => s + fn(x), 0) / a.length) : null;
-  const okI = cI.filter(k => enRango(k.ing, m.kcalMin, m.kcalMax) === 0).length, okB = cB.filter(k => enRango(k.bal, m.balMin, m.balMax) === 0).length;
+  const okI = cI.filter(k => { const r = rangoIng(k); return enRango(k.ing, r[0], r[1]) === 0; }).length, okB = cB.filter(k => enRango(k.bal, m.balMin, m.balMax) === 0).length;
   const hayI = enRango(0, m.kcalMin, m.kcalMax) !== null, hayB = enRango(0, m.balMin, m.balMax) !== null;
   let h = `<p class="small muted" style="margin-bottom:8px">Últimos 14 días</p><div class="grid2">
     <div class="kpi"><b>${pr(cI, k => k.ing) === null ? '—' : pr(cI, k => k.ing) + ' kcal'}</b><span>ingesta promedio (${cI.length} días)</span></div>
     <div class="kpi"><b>${pr(cB, k => k.bal) === null ? '—' : sg(pr(cB, k => k.bal)) + ' kcal'}</b><span>balance promedio</span></div>
     <div class="kpi"><b>${hayI ? okI + '/' + cI.length : '—'}</b><span>días con la ingesta dentro del rango</span></div>
     <div class="kpi"><b>${hayB ? okB + '/' + cB.length : '—'}</b><span>días con el balance dentro del objetivo</span></div>
-    <div class="kpi"><b>${pr(cA, k => k.act) === null ? '—' : pr(cA, k => k.act) + ' kcal'}</b><span>calorías activas promedio</span></div>
+    <div class="kpi"><b>${pr(cA, k => k.act) === null ? '—' : pr(cA, k => k.act) + ' kcal'}</b><span>calorías activas promedio (reloj)</span></div>
     <div class="kpi"><b>${pr(cP, k => k.pasos) === null ? '—' : pr(cP, k => k.pasos)}</b><span>pasos promedio</span></div></div>`;
   if (cB.length) h += '<p class="small" style="margin-top:10px"><b>Balance diario (kcal)</b></p>' + lineChart([{ pts: cB.map(k => [dayN(k.f), k.bal]), color: 'var(--pur2)', dots: true }]) + (hayB ? '<p class="small muted">Objetivo definido por usted: ' + rangoTxt(m.balMin, m.balMax, 'kcal') + '. Los valores negativos indican déficit.</p>' : '<p class="small muted">Los valores negativos indican déficit. Puede definir un objetivo en Ajustes.</p>');
   if (cP.length) h += '<p class="small" style="margin-top:10px"><b>Pasos por día</b></p>' + barChart(cP.map(k => ({ l: fmt(pd(k.f)).replace('.', ''), v: k.pasos })));
@@ -401,7 +456,7 @@ function progKcalHTML() {
 
 function renderMetasVista() {
   const m = metas(); const el = $('#metasBox'); if (!el) return;
-  const it = [['Kéfir', m.kefir], ['Azúcares', m.azucar], ['Agua', m.agua], ['Peso', m.peso], ['Ingesta diaria', (m.kcalMin !== '' || m.kcalMax !== '') ? rangoTxt(m.kcalMin, m.kcalMax, 'kcal') : ''], ['Balance diario', (m.balMin !== '' || m.balMax !== '') ? rangoTxt(m.balMin, m.balMax, 'kcal') : ''], ['Gasto base', m.base ? m.base + ' kcal' : ''], ['Otras metas', m.notas]].filter(p => p[1]);
+  const it = [['Kéfir', m.kefir], ['Azúcares', m.azucar], ['Agua', m.agua], ['Peso', m.peso], ['Ingesta (día sin ejercicio)', (m.kcalMin !== '' || m.kcalMax !== '') ? rangoTxt(m.kcalMin, m.kcalMax, 'kcal') : ''], ['Balance diario', (m.balMin !== '' || m.balMax !== '') ? rangoTxt(m.balMin, m.balMax, 'kcal') : ''], ['Gasto base', m.base ? m.base + ' kcal' : ''], ['Otras metas', m.notas]].filter(p => p[1]);
   el.innerHTML = '<h3>Mis metas</h3>' + (it.length ? '<ul class="dots small">' + it.map(p => `<li><b>${p[0]}:</b> ${esc(p[1])}</li>`).join('') + '</ul>' : '<p class="small muted">Aún no ha definido metas.</p>') + '<p class="small muted" style="margin-top:6px">Las metas y los rangos de calorías los define usted en Ajustes; la aplicación no los prescribe.</p>';
 }
 
@@ -420,7 +475,7 @@ const SINT = ['Dolor de cabeza', 'Náuseas', 'Mareo', 'Cansancio inusual', 'Falt
 function renderCusco() {
   const c = cfg(), n = diasViaje(), h = hoyISO();
   const cuenta = n > 0 ? `Faltan <b>${n} días</b> para el viaje a Cusco` : n === 0 ? '<b>Hoy</b> es el viaje a Cusco' : (h <= c.regreso ? `Día <b>${-n + 1}</b> del viaje` : 'El viaje ya terminó');
-  $('#hoyCusco').innerHTML = `<div class="card"><div class="row sp"><span class="small">${cuenta}</span><span class="tag">${faseActual()}</span></div></div>`;
+  $('#hoyCusco').innerHTML = `<div class="card" style="padding:10px 14px"><div class="row sp"><span class="small">${cuenta}</span></div></div>`;
   const fases = WEEKS.map(w => ({ t: 'Semana ' + w.n + ' · ' + w.t, f: w.f, on: h >= iso(START) && h < c.viaje && curWeek() === w.n }));
   fases.push({ t: 'Viaje a Cusco', f: fmt(pd(c.viaje)) + ' – ' + fmt(pd(c.regreso)), on: h >= c.viaje && h <= c.regreso });
   fases.push({ t: 'Rutina posterior al viaje', f: 'desde el regreso', on: h > c.regreso });
@@ -463,9 +518,9 @@ function renderGen() {
     const ini = pd(g.inicio); ini.setDate(ini.getDate() + (k - 1) * 7); const esD = k % cada === 0; const bloque = Math.ceil(k / cada), paso = (k - 1) % cada;
     const fuerza = esD ? '2 × 10 con carga ligera (descarga: cerca de la mitad del volumen)' : PASOS[Math.min(paso, PASOS.length - 1)] + (bloque > 1 ? ' (partiendo de las cargas del bloque ' + (bloque - 1) + ')' : '');
     const z2 = esD ? 20 : Math.min(45, 25 + 5 * paso + 5 * (bloque - 1)), rondas = esD ? 2 : Math.min(4, 3 + (paso > 1 ? 1 : 0));
-    out += `<div class="card ${esD ? 'pur' : ''}"><div class="row sp"><h3>Semana ${k}${esD ? ' · Descarga' : ' · Bloque ' + bloque}</h3><span class="small muted">desde el ${fmt(ini)}</span></div>
+    out += `<details class="card fold ${esD ? 'pur' : ''}"${k === 1 ? ' open' : ''}><summary><h3>Semana ${k}${esD ? ' · Descarga' : ' · Bloque ' + bloque}</h3><span class="small muted">desde el ${fmt(ini)}</span></summary><div class="fbody">
      <p class="small"><b>Fuerza:</b> ${fuerza}.</p><p class="small"><b>Cardio en Zona 2:</b> ${z2} min por sesión de gimnasio.</p>
-     <table style="margin-top:6px">${dias.map(d => { const gi = gymD.indexOf(d), ci = casaD.indexOf(d); const t = gi >= 0 ? `<span class="tag gym">Gimnasio</span> ${GS[gi % GS.length]}` : ci >= 0 ? `<span class="tag casa">Casa</span> ${CS[ci % CS.length]} · ${ci % CS.length === 0 ? rondas + ' rondas, ' : ''}máximo 30 min` : '<span class="tag desc">Descanso</span>'; return `<tr><td style="width:44px"><b>${DN[d]}</b></td><td class="small">${t}</td></tr>`; }).join('')}</table></div>`;
+     <table style="margin-top:6px">${dias.map(d => { const gi = gymD.indexOf(d), ci = casaD.indexOf(d); const t = gi >= 0 ? `<span class="tag gym">Gimnasio</span> ${GS[gi % GS.length]}` : ci >= 0 ? `<span class="tag casa">Casa</span> ${CS[ci % CS.length]} · ${ci % CS.length === 0 ? rondas + ' rondas, ' : ''}máximo 30 min` : '<span class="tag desc">Descanso</span>'; return `<tr><td style="width:44px"><b>${DN[d]}</b></td><td class="small">${t}</td></tr>`; }).join('')}</table></div></details>`;
   }
   $('#genBox').innerHTML = `<div class="card"><h3>Generador de rutina posterior al viaje</h3>
     <p class="small muted">Progresión por bloques con una semana de descarga al final de cada bloque. Las rutinas de casa duran como máximo 30 minutos. Los días propuestos provienen del horario que ya tenía la aplicación; ajústelos a su disponibilidad.</p>
@@ -488,7 +543,7 @@ function aplicarTema() { const c = cfg(); document.body.classList.toggle('claro'
 function datosTodos() {
   const d = {};
   for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf('pc_') === 0) { const v = localStorage.getItem(k); try { d[k] = JSON.parse(v); } catch (e) { d[k] = v; } } }
-  return { app: 'plan-cusco', version: 2, exportado: new Date().toISOString(), datos: d };
+  return { app: 'plan-cusco', version: 3, exportado: new Date().toISOString(), datos: d };
 }
 function exportar() {
   const txt = JSON.stringify(datosTodos(), null, 1);
@@ -506,44 +561,71 @@ function importarTexto(txt) {
   Object.keys(o.datos).forEach(k => { if (k.indexOf('pc_') === 0) localStorage.setItem(k, JSON.stringify(o.datos[k])); });
   location.reload(); return true;
 }
+// Comprueba que el rango de ingesta y el balance objetivo digan lo mismo en un dia sin ejercicio.
+function chkKcal() {
+  const el = $('#ajKcalChk'); if (!el) return; const m = metas(), b = num(m.base);
+  if (!(b > 0) || (vacio(m.balMin) && vacio(m.balMax))) { el.innerHTML = ''; return; }
+  const lo = desplaza(m.balMin, b), hi = desplaza(m.balMax, b);
+  let t = `Con su gasto base y su balance objetivo, la ingesta que cumple el objetivo en un día sin ejercicio es <b>${rangoTxt(lo, hi, 'kcal')}</b>. En días con ejercicio, la aplicación le suma las calorías activas contadas.`, ok = true;
+  if (!vacio(m.kcalMin) || !vacio(m.kcalMax)) {
+    const dif = Math.max(!vacio(m.kcalMin) && lo !== '' ? Math.abs(nm(m.kcalMin) - nm(lo)) : 0, !vacio(m.kcalMax) && hi !== '' ? Math.abs(nm(m.kcalMax) - nm(hi)) : 0);
+    ok = dif <= 50;
+    t += ok ? ' Su rango de ingesta coincide con ese valor (diferencia de ' + Math.round(dif) + ' kcal o menos): los dos objetivos son coherentes.' : ` Su rango de ingesta (${rangoTxt(m.kcalMin, m.kcalMax, 'kcal')}) no coincide con ese valor; conviene igualarlos para que la aplicación no muestre avisos contradictorios.`;
+  }
+  el.innerHTML = `<div class="${ok ? 'okn' : 'note'}" style="margin:10px 0 0">${t}</div>`;
+}
 function renderAjustes() {
   const c = cfg(), m = metas();
   const bak = localStorage.getItem('pcbak_ultimo');
   $('#ajBox').innerHTML = `
-   <div class="card"><h3>Mis metas</h3><p class="small muted">Las define usted, en texto libre.</p>
-    ${[['kefir', 'Kéfir diario'], ['azucar', 'Reducción de azúcares'], ['agua', 'Hidratación (por ejemplo, vasos al día)'], ['peso', 'Peso'], ['notas', 'Otras metas']].map(p => `<label class="small muted" style="display:block;margin-top:8px">${p[1]}</label><input class="fi" data-m="${p[0]}" value="${esc(m[p[0]])}" style="width:100%">`).join('')}</div>
-   <div class="card" id="ajKcal"><h3>Calorías: rangos definidos por usted</h3><p class="small muted">La aplicación no calcula ni recomienda estos valores; solo compara lo que registre con los rangos que usted escriba. Use valores negativos para el déficit (por ejemplo, de −500 a −300).</p>
-    ${[['kcalMin', 'Ingesta diaria mínima (kcal)'], ['kcalMax', 'Ingesta diaria máxima (kcal)'], ['base', 'Gasto base diario sin ejercicio (kcal)'], ['balMin', 'Balance objetivo, desde (kcal)'], ['balMax', 'Balance objetivo, hasta (kcal)']].map(p => `<div class="input"><label>${p[1]}</label><input data-m="${p[0]}" value="${esc(m[p[0]])}"></div>`).join('')}
-    <p class="small muted" style="margin-top:10px"><b>Cómo se usa el gasto base:</b> es su gasto diario sin contar el ejercicio. Cada día se le suman las calorías activas que usted copie del reloj, y ese total es el gasto del día. Los pasos se guardan solo como referencia y no se suman aparte, para no contar dos veces la misma actividad.</p></div>
+   <div class="card" id="ajKcal"><h3>Calorías: valores definidos por usted</h3><p class="small muted">La aplicación no calcula ni recomienda estos valores; solo compara lo que registre con lo que usted escriba. Use valores negativos para el déficit (por ejemplo, de −500 a −300).</p>
+    ${[['base', 'Gasto base diario sin ejercicio (kcal)'], ['balMin', 'Balance objetivo, desde (kcal)'], ['balMax', 'Balance objetivo, hasta (kcal)'], ['kcalMin', 'Ingesta mínima en un día sin ejercicio (kcal)'], ['kcalMax', 'Ingesta máxima en un día sin ejercicio (kcal)'], ['actPct', 'Calorías activas del reloj que se cuentan (%); vacío = 100']].map(p => `<div class="input"><label>${p[1]}</label><input data-m="${p[0]}" value="${esc(m[p[0]])}"></div>`).join('')}
+    <div id="ajKcalChk"></div>
+    <details style="margin-top:10px"><summary class="small" style="cursor:pointer;color:var(--pur2)">Cómo se calcula</summary><ul class="dots small muted" style="margin-top:6px">
+     <li><b>Gasto del día</b> = gasto base + calorías activas del reloj × el porcentaje indicado.</li>
+     <li><b>Balance</b> = ingesta − gasto. El objetivo de ingesta del día = gasto + balance objetivo.</li>
+     <li>El rango de ingesta se escribe para un día sin ejercicio; en días con ejercicio se desplaza sumando las calorías activas contadas.</li>
+     <li>Los pasos se guardan solo como referencia y no se suman aparte, para no contar dos veces la misma actividad.</li></ul></details></div>
    <div class="card"><h3>Viaje y entrenamiento</h3>
     <div class="input"><label>Fecha de llegada a Cusco</label><input type="date" data-c="viaje" value="${c.viaje}" style="width:150px"></div>
     <div class="input"><label>Fecha de regreso</label><input type="date" data-c="regreso" value="${c.regreso}" style="width:150px"></div>
+    <div class="input"><label>FC máxima (lpm). Si no la conoce: 208 − 0,7 × edad</label><input inputmode="numeric" data-c="fcmax" value="${c.fcmax}"></div>
     <div class="input"><label>Descanso entre series (segundos)</label><input inputmode="numeric" data-c="desc" value="${c.desc}"></div></div>
+   <div class="card"><h3>Mis metas</h3><p class="small muted">Las define usted, en texto libre.</p>
+    ${[['kefir', 'Kéfir diario'], ['azucar', 'Reducción de azúcares'], ['agua', 'Hidratación (por ejemplo, vasos al día)'], ['peso', 'Peso'], ['notas', 'Otras metas']].map(p => `<label class="small muted" style="display:block;margin-top:8px">${p[1]}</label><input class="fi" data-m="${p[0]}" value="${esc(m[p[0]])}" style="width:100%">`).join('')}</div>
    <div class="card"><h3>Apariencia</h3>
     <label class="chk"><input type="checkbox" data-c="claro" ${c.claro ? 'checked' : ''}><span class="small">Tema claro (por defecto, tema oscuro)</span></label>
-    <label class="chk"><input type="checkbox" data-c="gym" ${c.gym ? 'checked' : ''}><span class="small">Modo gimnasio: botones y campos grandes</span></label></div>
+    <label class="chk"><input type="checkbox" data-c="gym" ${c.gym ? 'checked' : ''}><span class="small">Modo gimnasio: botones y campos grandes</span></label>
+    <button class="mini" id="introBtn" style="margin-top:10px">Mostrar de nuevo la guía de inicio</button></div>
    <div class="card"><h3>Datos</h3><p class="small muted">Los datos se guardan en este navegador (localStorage, claves con prefijo pc_). Exporte con regularidad para tener una copia.</p>
     <button class="btn" id="expBtn">Exportar datos (JSON)</button>
     <button class="btn" id="impBtn" style="background:var(--card2);color:var(--tx);border:1px solid var(--line)">Importar datos (JSON)</button>
     <input type="file" id="impFile" accept=".json,application/json" style="display:none">
     ${bak ? '<button class="btn" id="bakBtn" style="background:var(--card2);color:var(--tx);border:1px solid var(--line)">Restaurar la copia previa a la última importación</button>' : ''}</div>
-   <div class="card"><h3>Uso sin conexión e instalación</h3><p class="small">La aplicación funciona sin conexión al abrir <b>index.html</b> directamente. Para instalarla como aplicación, el navegador exige servirla desde una dirección http o https; en ese caso se activa automáticamente la copia sin conexión y aparece la opción «Instalar» del navegador. Estado: <b id="swEstado">${location.protocol.indexOf('http') === 0 ? 'servida por ' + location.protocol.replace(':', '') : 'abierta como archivo local (sin instalación)'}</b>.</p></div>`;
-  $('#ajBox').querySelectorAll('[data-m]').forEach(i => i.oninput = () => { const mm = store.get('metas', {}); mm[i.dataset.m] = i.value; store.set('metas', mm); renderHab(); });
+   <details class="card fold"><summary><h3>Uso sin conexión e instalación</h3></summary><div class="fbody"><p class="small">La aplicación funciona sin conexión al abrir <b>index.html</b> directamente. Para instalarla como aplicación, el navegador exige servirla desde una dirección http o https; en ese caso se activa automáticamente la copia sin conexión y aparece la opción «Instalar» del navegador. Estado: <b id="swEstado">${location.protocol.indexOf('http') === 0 ? 'servida por ' + location.protocol.replace(':', '') : 'abierta como archivo local (sin instalación)'}</b>.</p></div></details>`;
+  $('#ajBox').querySelectorAll('[data-m]').forEach(i => i.oninput = () => { const mm = store.get('metas', {}); mm[i.dataset.m] = i.value; store.set('metas', mm); renderHab(); chkKcal(); });
   $('#ajBox').querySelectorAll('[data-c]').forEach(i => i.onchange = () => {
     const k = i.dataset.c;
-    if (i.type === 'checkbox') setCfg(k, i.checked); else if (k === 'desc') setCfg(k, Math.min(600, Math.max(10, Math.round(num(i.value)) || 90))); else if (i.value) setCfg(k, i.value);
+    if (i.type === 'checkbox') setCfg(k, i.checked);
+    else if (k === 'desc') setCfg(k, Math.min(600, Math.max(10, Math.round(num(i.value)) || 90)));
+    else if (k === 'fcmax') { const v = Math.round(num(i.value)); setCfg(k, v >= 140 && v <= 220 ? v : 193); i.value = cfg().fcmax; }
+    else if (i.value) setCfg(k, i.value);
     aplicarTema(); renderCusco(); renderSes();
+    if (k === 'fcmax') { zonasCalc(); renderZonas(); renderRut(); }
   });
+  $('#introBtn').onclick = () => { store.set('intro', false); renderIntro(); showTab('hoy'); };
   $('#expBtn').onclick = exportar;
   $('#impBtn').onclick = () => $('#impFile').click();
   $('#impFile').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => importarTexto(r.result); r.readAsText(f); };
   const bb = $('#bakBtn'); if (bb) bb.onclick = () => { const t = localStorage.getItem('pcbak_ultimo'); if (t) importarTexto(t); };
+  chkKcal();
 }
 
 // ---------- arranque ----------
 function renderAll() {
+  zonasCalc();
   renderHoy(); renderPlan(); renderRut(); renderHitos(); renderMaleta(); renderProg();
-  renderCusco(); renderSes(); renderHab(); renderPeso(); renderGen(); renderAjustes();
+  renderCusco(); renderSes(); renderHab(); renderPeso(); renderGen(); renderAjustes(); renderZonas(); renderIntro();
   if ($('#progreso').classList.contains('on')) renderProgreso();
 }
 migrar();
