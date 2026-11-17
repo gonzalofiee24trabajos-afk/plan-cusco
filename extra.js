@@ -309,13 +309,14 @@ function renderHab() {
   fI.value = habF; fI.onchange = () => { if (fI.value) { habF = fI.value; renderHab(); } };
   bindHab($('#habDia'), habF);
   const dd = getHab()[habF] || {}; const c = dd.com || {}, kc = dd.kc || {};
-  $('#habComidas').innerHTML = [['des', 'Desayuno'], ['alm', 'Almuerzo'], ['cen', 'Cena'], ['ext', 'Otros (meriendas, antojos, bebidas)']].map(p => `<label class="small muted" style="display:block;margin-top:8px">${p[1]}</label><div class="row"><textarea class="fi" rows="2" data-c="${p[0]}" style="flex:1;min-width:0">${esc(c[p[0]])}</textarea><input class="fi" data-k="${p[0]}" inputmode="numeric" placeholder="kcal" value="${esc(kc[p[0]] || '')}" style="width:76px"></div>`).join('');
-  $('#habComidas').querySelectorAll('textarea').forEach(t => t.oninput = () => setHab(habF, d => { d.com = d.com || {}; d.com[t.dataset.c] = t.value; }));
-  $('#habComidas').querySelectorAll('input[data-k]').forEach(t => t.oninput = () => { setHab(habF, d => { d.kc = d.kc || {}; d.kc[t.dataset.k] = num(t.value); }); pintarKcal(); });
+  $('#habComidas').innerHTML = [['des', 'Desayuno'], ['alm', 'Almuerzo'], ['cen', 'Cena'], ['ext', 'Otros (meriendas, antojos, bebidas)']].map(p => `<label class="small muted" style="display:block;margin-top:8px">${p[1]}</label><div class="row"><textarea class="fi" rows="2" data-c="${p[0]}" style="flex:1;min-width:0">${esc(c[p[0]])}</textarea><label class="row" style="gap:5px;flex:0 0 auto"><input class="fi" type="number" min="0" step="1" inputmode="numeric" data-k="${p[0]}" aria-label="${p[1]}: kcal" value="${esc(kc[p[0]] || '')}" style="width:74px"><span class="small muted">kcal</span></label></div><div data-u="${p[0]}"></div>`).join('');
+  $('#habComidas').querySelectorAll('textarea').forEach(t => t.oninput = () => { setHab(habF, d => { d.com = d.com || {}; d.com[t.dataset.c] = t.value; }); sugerirKcal(t.dataset.c); });
+  $('#habComidas').querySelectorAll('input[data-k]').forEach(t => t.oninput = () => { setHab(habF, d => { d.kc = d.kc || {}; d.kc[t.dataset.k] = Math.max(0, Math.round(num(t.value))); }); pintarKcal(); sugerirKcal(t.dataset.k); });
   $('#habKcal').innerHTML = `<div class="input"><label>Calorías activas del ejercicio (reloj), kcal</label><input inputmode="numeric" data-d="act" value="${dd.act || ''}"></div>
     <div class="input"><label>Pasos del día</label><input inputmode="numeric" data-d="pasos" value="${dd.pasos || ''}"></div><div id="habKcalRes" style="margin-top:10px"></div>`;
   $('#habKcal').querySelectorAll('input[data-d]').forEach(t => t.oninput = () => { setHab(habF, d => d[t.dataset.d] = Math.round(num(t.value))); pintarKcal(); });
   pintarKcal();
+  ['des', 'alm', 'cen', 'ext'].forEach(sugerirKcal);
   $('#habTabla').innerHTML = hab14();
   renderMetasVista();
 }
@@ -347,8 +348,35 @@ function kcalHTML(f) {
   else h += '<p class="small muted">Registre las calorías de las comidas para calcular el balance.</p>';
   return h;
 }
+function sugerirKcal(k) {
+  const box = $('#habComidas'); if (!box) return;
+  const ta = box.querySelector('textarea[data-c="' + k + '"]'), inp = box.querySelector('input[data-k="' + k + '"]'), u = box.querySelector('[data-u="' + k + '"]');
+  if (!ta || !inp || !u) return;
+  const m = ta.value.match(/(\d+(?:[.,]\d+)?)\s*(?:kcal|cal)/i) || ta.value.match(/(\d+(?:[.,]\d+)?)/);
+  const n = m ? Math.round(num(m[1])) : 0;
+  if (n > 0 && inp.value.trim() === '') {
+    u.innerHTML = '<button class="mini" style="margin-top:4px">Usar ' + n + ' como kcal</button>';
+    u.firstChild.onclick = () => { inp.value = n; inp.oninput(); };
+  } else u.innerHTML = '';
+}
+function irAjustesKcal() { showTab('ajustes'); const c = $('#ajKcal'); if (c) c.scrollIntoView(); }
+function resumenKcal(f) {
+  const k = kcalDia(f), m = metas();
+  const rI = k.ing > 0 ? enRango(k.ing, m.kcalMin, m.kcalMax) : null, rB = k.bal !== null ? enRango(k.bal, m.balMin, m.balMax) : null;
+  const est = r => r === null ? '' : r === 0 ? '<b style="color:var(--ok)">Dentro del rango</b>' : '<b style="color:var(--warn)">Fuera del rango (' + (r < 0 ? 'por debajo' : 'por encima') + ')</b>';
+  const hayI = enRango(0, m.kcalMin, m.kcalMax) !== null, hayB = enRango(0, m.balMin, m.balMax) !== null;
+  let h = `<table>
+    <tr><td><b>Ingesta total</b><br><span class="small muted">suma de las comidas</span></td><td><b>${k.ing > 0 ? Math.round(k.ing) + ' kcal' : 'Sin registrar'}</b><br><span class="small">${k.ing > 0 ? (hayI ? est(rI) + '<br><span class="muted">rango: ' + rangoTxt(m.kcalMin, m.kcalMax, 'kcal') + '</span>' : '<span class="muted">sin rango definido</span>') : ''}</span></td></tr>
+    <tr><td><b>Gasto</b><br><span class="small muted">gasto base + calorías activas</span></td><td><b>${k.base > 0 ? Math.round(k.base + k.act) + ' kcal' : 'Sin calcular'}</b><br><span class="small muted">${k.base > 0 ? Math.round(k.base) : 'sin definir'} + ${Math.round(k.act)}</span></td></tr>
+    <tr><td><b>Balance</b><br><span class="small muted">ingesta − gasto</span></td><td><b>${k.bal !== null ? sg(k.bal) + ' kcal (' + (k.bal < 0 ? 'déficit' : k.bal > 0 ? 'superávit' : 'equilibrio') + ')' : 'Sin calcular'}</b><br><span class="small">${k.bal !== null ? (hayB ? est(rB) + '<br><span class="muted">objetivo: ' + rangoTxt(m.balMin, m.balMax, 'kcal') + '</span>' : '<span class="muted">sin objetivo definido</span>') : ''}</span></td></tr></table>`;
+  if (!(k.base > 0)) h += '<div class="note" style="margin:10px 0 0">Falta definir el gasto base diario; sin ese dato no se puede calcular el gasto ni el balance. <button class="mini" data-ir="ajustes" style="margin-top:6px">Definir en Ajustes</button></div>';
+  if (k.ing > 0 && rI === -1) h += '<div class="okn" style="margin:10px 0 0;border-left-color:var(--mut);background:var(--card2);color:var(--tx)">La ingesta registrada este día queda por debajo del mínimo que usted definió. Puede que aún falten comidas por registrar. Si ocurre con frecuencia, conviene consultarlo con un profesional.</div>';
+  h += '<p class="small muted" style="margin-top:8px">Los rangos y el gasto base los define usted en Ajustes; la aplicación solo compara y no recomienda valores.</p>';
+  return h;
+}
 function pintarKcal() {
-  const a = $('#habKcalRes'); if (a) a.innerHTML = kcalHTML(habF) + '<p class="small muted" style="margin-top:6px">Balance = ingesta − (gasto base + calorías activas). Los rangos y el gasto base los define usted en Ajustes; la aplicación no los calcula.</p>';
+  const t = $('#habKcalTop'); if (t) { t.innerHTML = resumenKcal(habF); const b = t.querySelector('[data-ir]'); if (b) b.onclick = irAjustesKcal; }
+  const a = $('#habKcalRes'); if (a) a.innerHTML = '<p class="small muted">El resumen del día está al inicio de esta pantalla. Los pasos se guardan como referencia y no se suman al gasto.</p>';
   const b = $('#hoyKcal'); if (b) b.innerHTML = '<div style="border-top:1px solid var(--line);padding-top:8px;margin-top:4px">' + kcalHTML(hoyISO()) + '</div>';
 }
 function progKcalHTML() {
@@ -484,8 +512,9 @@ function renderAjustes() {
   $('#ajBox').innerHTML = `
    <div class="card"><h3>Mis metas</h3><p class="small muted">Las define usted, en texto libre.</p>
     ${[['kefir', 'Kéfir diario'], ['azucar', 'Reducción de azúcares'], ['agua', 'Hidratación (por ejemplo, vasos al día)'], ['peso', 'Peso'], ['notas', 'Otras metas']].map(p => `<label class="small muted" style="display:block;margin-top:8px">${p[1]}</label><input class="fi" data-m="${p[0]}" value="${esc(m[p[0]])}" style="width:100%">`).join('')}</div>
-   <div class="card"><h3>Calorías: rangos definidos por usted</h3><p class="small muted">La aplicación no calcula ni recomienda estos valores; solo compara lo que registre con los rangos que usted escriba. Use valores negativos para el déficit (por ejemplo, de −500 a −300).</p>
-    ${[['kcalMin', 'Ingesta diaria mínima (kcal)'], ['kcalMax', 'Ingesta diaria máxima (kcal)'], ['base', 'Gasto base diario sin ejercicio (kcal)'], ['balMin', 'Balance objetivo, desde (kcal)'], ['balMax', 'Balance objetivo, hasta (kcal)']].map(p => `<div class="input"><label>${p[1]}</label><input data-m="${p[0]}" value="${esc(m[p[0]])}"></div>`).join('')}</div>
+   <div class="card" id="ajKcal"><h3>Calorías: rangos definidos por usted</h3><p class="small muted">La aplicación no calcula ni recomienda estos valores; solo compara lo que registre con los rangos que usted escriba. Use valores negativos para el déficit (por ejemplo, de −500 a −300).</p>
+    ${[['kcalMin', 'Ingesta diaria mínima (kcal)'], ['kcalMax', 'Ingesta diaria máxima (kcal)'], ['base', 'Gasto base diario sin ejercicio (kcal)'], ['balMin', 'Balance objetivo, desde (kcal)'], ['balMax', 'Balance objetivo, hasta (kcal)']].map(p => `<div class="input"><label>${p[1]}</label><input data-m="${p[0]}" value="${esc(m[p[0]])}"></div>`).join('')}
+    <p class="small muted" style="margin-top:10px"><b>Cómo se usa el gasto base:</b> es su gasto diario sin contar el ejercicio. Cada día se le suman las calorías activas que usted copie del reloj, y ese total es el gasto del día. Los pasos se guardan solo como referencia y no se suman aparte, para no contar dos veces la misma actividad.</p></div>
    <div class="card"><h3>Viaje y entrenamiento</h3>
     <div class="input"><label>Fecha de llegada a Cusco</label><input type="date" data-c="viaje" value="${c.viaje}" style="width:150px"></div>
     <div class="input"><label>Fecha de regreso</label><input type="date" data-c="regreso" value="${c.regreso}" style="width:150px"></div>
